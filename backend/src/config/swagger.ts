@@ -24,12 +24,16 @@ Engineered specifically for UMKM in West Java.
     },
     servers: [
       {
-        url: 'http://localhost:5000',
-        description: 'Development Server (Local)',
+        url: '/',
+        description: 'Current Host (Auto)',
       },
       {
-        url: 'https://aphyah-backend.vercel.app',
+        url: 'https://backend-umkm.vercel.app',
         description: 'Production Server (Vercel)',
+      },
+      {
+        url: 'http://localhost:5000',
+        description: 'Development Server (Local)',
       },
     ],
     components: {
@@ -141,7 +145,7 @@ Engineered specifically for UMKM in West Java.
       },
     ],
     paths: {
-      '/health': {
+      '/api/health': {
         get: {
           summary: 'Health Check Endpoint',
           tags: ['System'],
