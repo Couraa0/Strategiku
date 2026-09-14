@@ -46,7 +46,16 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // Swagger Documentation Endpoints
-app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+const swaggerUiOptions = {
+  customCssUrl: 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
+  customJs: [
+    'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.js',
+  ],
+  customSiteTitle: 'APH YAH - API Documentation',
+};
+
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 app.get('/api/docs.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.send(swaggerSpec);
@@ -112,10 +121,13 @@ app.use('/api/assistant', assistantRouter);
 // Global Error Handler
 app.use(errorHandler);
 
-const PORT = config.port;
-app.listen(PORT, () => {
-  console.log(`🚀 APH YAH Backend Service running on port ${PORT}`);
-  console.log(`📡 REST API available at http://localhost:${PORT}/api`);
-});
+// Only listen when running locally (not on Vercel serverless)
+if (!process.env.VERCEL) {
+  const PORT = config.port;
+  app.listen(PORT, () => {
+    console.log(`🚀 APH YAH Backend Service running on port ${PORT}`);
+    console.log(`📡 REST API available at http://localhost:${PORT}/api`);
+  });
+}
 
 export default app;
