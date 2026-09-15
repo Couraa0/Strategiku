@@ -40,13 +40,13 @@ APH YAH mengintegrasikan 3 mesin kecerdasan utama yang bekerja harmonis melalui 
 
 ## 🗄️ Database Setup Guide (Supabase PostgreSQL)
 
-Project ini telah dikonfigurasi dengan Supabase PostgreSQL real:
-- **Supabase URL**: `https://ltdhmybczzoaoidtjxgh.supabase.co`
-- **PostgreSQL Host**: `db.ltdhmybczzoaoidtjxgh.supabase.co`
+Project ini menggunakan Supabase PostgreSQL:
+- **Supabase URL**: `https://your-supabase-project.supabase.co`
+- **PostgreSQL Host**: `db.your-supabase-project.supabase.co`
 
 ### Langkah Inisialisasi Database via Supabase SQL Editor:
 1. Buka dashboard [Supabase Console](https://supabase.com).
-2. Pilih project Supabase Anda (`ltdhmybczzoaoidtjxgh`).
+2. Pilih project Supabase Anda.
 3. Buka menu **SQL Editor** pada navigasi sebelah kiri.
 4. Buka file `backend/supabase/schema.sql` yang berada di dalam repository ini.
 5. Salin (*copy*) seluruh perintah DDL SQL dari file `schema.sql` dan tempelkan (*paste*) di SQL Editor Supabase.
@@ -75,14 +75,14 @@ cd Skripsi
    ```bash
    npm install
    ```
-3. File `.env` sudah dikonfigurasi secara otomatis:
+3. Buat file `.env` di folder `backend` (dapat menyalin dari `.env.example`):
    ```env
    PORT=5000
    NODE_ENV=development
-   DATABASE_URL="postgresql://postgres:Rakha-200505@db.ltdhmybczzoaoidtjxgh.supabase.co:5432/postgres?schema=public"
-   SUPABASE_URL="https://ltdhmybczzoaoidtjxgh.supabase.co"
-   SUPABASE_ANON_KEY="sb_publishable_i6fBGSTYf0b_klKy_mahBw_zeQiBSCS"
-   JWT_SECRET="aphyah-super-secret-jwt-key-2026"
+   DATABASE_URL="postgresql://postgres:your_password@db.your-supabase-project.supabase.co:5432/postgres?schema=public"
+   SUPABASE_URL="https://your-supabase-project.supabase.co"
+   SUPABASE_ANON_KEY="your_supabase_anon_key"
+   JWT_SECRET="your_jwt_secret_key"
    JWT_EXPIRES_IN="7d"
    CLIENT_URL="http://localhost:5173"
    ```
@@ -105,11 +105,11 @@ cd Skripsi
    ```bash
    npm install
    ```
-3. File `.env` sudah dikonfigurasi secara otomatis:
+3. Buat file `.env` di folder `frontend` (dapat menyalin dari `.env.example`):
    ```env
    VITE_API_URL=http://localhost:5000/api
-   VITE_SUPABASE_URL=https://ltdhmybczzoaoidtjxgh.supabase.co
-   VITE_SUPABASE_ANON_KEY=sb_publishable_i6fBGSTYf0b_klKy_mahBw_zeQiBSCS
+   VITE_SUPABASE_URL=https://your-supabase-project.supabase.co
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
    ```
 4. Jalankan frontend development server:
    ```bash
@@ -152,10 +152,10 @@ Platform APH YAH dirancang untuk dideploy secara terpisah di Vercel.
    ```
 3. Set Environment Variables di Vercel Backend:
    - `NODE_ENV`: `production`
-   - `DATABASE_URL`: `postgresql://postgres:Rakha-200505@db.ltdhmybczzoaoidtjxgh.supabase.co:5432/postgres?schema=public`
-   - `SUPABASE_URL`: `https://ltdhmybczzoaoidtjxgh.supabase.co`
-   - `SUPABASE_ANON_KEY`: `sb_publishable_i6fBGSTYf0b_klKy_mahBw_zeQiBSCS`
-   - `JWT_SECRET`: `aphyah-super-secret-jwt-key-2026`
+   - `DATABASE_URL`: `postgresql://postgres:your_password@db.your-supabase-project.supabase.co:5432/postgres?schema=public`
+   - `SUPABASE_URL`: `https://your-supabase-project.supabase.co`
+   - `SUPABASE_ANON_KEY`: `your_supabase_anon_key`
+   - `JWT_SECRET`: `your_jwt_secret_key`
 
 ### Deploying Frontend to Vercel
 1. Pastikan file `frontend/vercel.json` sudah ada (untuk penanganan routing SPA).
