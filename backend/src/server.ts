@@ -53,7 +53,7 @@ app.get(['/api/docs', '/api/docs/'], (req, res) => {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>APH YAH - API Documentation</title>
+  <title>Strategiku - API Documentation</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.8/swagger-ui.min.css" />
   <style>
     html { box-sizing: border-box; overflow-y: scroll; }
@@ -96,18 +96,18 @@ app.get('/api/docs.json', (req, res) => {
 app.get('/', (req, res) => {
   return sendSuccess(res, {
     status: 'ONLINE',
-    app: 'APH YAH - Integrated UMKM Business Growth Intelligence Platform',
+    app: 'Strategiku - Integrated UMKM Business Growth Intelligence Platform',
     documentation: '/api/docs',
     health: '/api/health',
     version: '1.0.0',
     timestamp: new Date().toISOString(),
-  }, 'APH YAH Backend API Service is running');
+  }, 'Strategiku Backend API Service is running');
 });
 
 app.get('/api', (req, res) => {
   return sendSuccess(res, {
     status: 'ONLINE',
-    app: 'APH YAH - Integrated UMKM Business Growth Intelligence Platform',
+    app: 'Strategiku - Integrated UMKM Business Growth Intelligence Platform',
     documentation: 'http://localhost:5000/api/docs',
     endpoints: [
       '/api/health',
@@ -124,14 +124,14 @@ app.get('/api', (req, res) => {
       '/api/assistant',
     ],
     timestamp: new Date().toISOString(),
-  }, 'APH YAH REST API v1.0.0');
+  }, 'Strategiku REST API v1.0.0');
 });
 
 // Health Check Endpoint
 app.get('/api/health', (req, res) => {
   return sendSuccess(res, {
     status: 'ONLINE',
-    app: 'APH YAH - Integrated UMKM Business Growth Intelligence Platform',
+    app: 'Strategiku - Integrated UMKM Business Growth Intelligence Platform',
     version: '1.0.0',
     timestamp: new Date().toISOString(),
   });
@@ -156,7 +156,7 @@ app.use(errorHandler);
 if (!process.env.VERCEL) {
   const PORT = config.port;
   app.listen(PORT, () => {
-    console.log(`🚀 APH YAH Backend Service running on port ${PORT}`);
+    console.log(`🚀 Strategiku Backend Service running on port ${PORT}`);
     console.log(`📡 REST API available at http://localhost:${PORT}/api`);
   });
 }

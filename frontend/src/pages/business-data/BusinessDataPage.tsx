@@ -101,7 +101,7 @@ export const BusinessDataPage: React.FC = () => {
               <UploadCloud className="w-4 h-4 text-sky-500" />
               <span>Unggah File Transaksi (.CSV)</span>
             </h3>
-            <p className="text-[11px] text-slate-500 font-medium">Pilih file CSV berformat sesuai template standar APH YAH</p>
+            <p className="text-[11px] text-slate-500 font-medium">Pilih file CSV berformat sesuai template standar Strategiku</p>
           </div>
 
           <form onSubmit={handleUpload} className="space-y-4">

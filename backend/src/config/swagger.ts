@@ -4,10 +4,10 @@ const options: swaggerJsdoc.Options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'APH YAH - Integrated UMKM Business Growth Intelligence Platform API',
+      title: 'Strategiku - Integrated UMKM Business Growth Intelligence Platform API',
       version: '1.0.0',
       description: `
-**APH YAH (Dari Data Usaha Menjadi Arah Pertumbuhan)**
+**Strategiku (Dari Data Usaha Menjadi Arah Pertumbuhan)**
 Engineered specifically for UMKM in West Java.
 
 ### Key Engines:
@@ -18,7 +18,7 @@ Engineered specifically for UMKM in West Java.
 ---
       `,
       contact: {
-        name: 'Muhammad Rakha Syam Putra (APH YAH Team)',
+        name: 'Muhammad Rakha Syam Putra (Strategiku Team)',
         email: 'Muhammadrakhasyamputra@gmail.com',
       },
     },

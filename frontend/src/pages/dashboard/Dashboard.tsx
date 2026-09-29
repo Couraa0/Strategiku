@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Target,
   Lightbulb,
+  Award,
 } from 'lucide-react';
 import {
   ResponsiveContainer,

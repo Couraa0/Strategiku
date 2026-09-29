@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "APH YAH Backend Service - Express + TypeScript + Prisma / Supabase",
+  "description": "Strategiku Backend Service - Express + TypeScript + Prisma / Supabase",
   "main": "src/server.ts",
   "type": "module",
   "scripts": {

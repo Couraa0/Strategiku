@@ -1,16 +1,16 @@
-# APH YAH - Integrated UMKM Business Growth Intelligence Platform
+# Strategiku - Integrated UMKM Business Growth Intelligence Platform
 Acong
 > **Tagline**: *"From Business Data to Business Growth"*  
 > **Tagline (ID)**: *"Dari Data Usaha Menjadi Arah Pertumbuhan"*  
 > **Regional Scope**: Jawa Barat, Indonesia  
 
-APH YAH adalah platform kecerdasan pertumbuhan bisnis terintegrasi (*Business Growth Intelligence Platform*) yang dirancang khusus untuk mengakselerasi skala usaha UMKM (Usaha Mikro, Kecil, dan Menengah) di Jawa Barat. Platform ini mengolah data transaksi harian dan profil kapabilitas usaha menjadi wawasan analitis otomatis, rekomendasi peluang strategis terkurasi (ekspor, sertifikasi halal, pembiayaan), serta pendampingan AI berbasis RAG.
+Strategiku adalah platform kecerdasan pertumbuhan bisnis terintegrasi (*Business Growth Intelligence Platform*) yang dirancang khusus untuk mengakselerasi skala usaha UMKM (Usaha Mikro, Kecil, dan Menengah) di Jawa Barat. Platform ini mengolah data transaksi harian dan profil kapabilitas usaha menjadi wawasan analitis otomatis, rekomendasi peluang strategis terkurasi (ekspor, sertifikasi halal, pembiayaan), serta pendampingan AI berbasis RAG.
 
 ---
 
 ## 🚀 Core Product Architecture & 3 Intelligence Engines
 
-APH YAH mengintegrasikan 3 mesin kecerdasan utama yang bekerja harmonis melalui *Shared Business Context*:
+Strategiku mengintegrasikan 3 mesin kecerdasan utama yang bekerja harmonis melalui *Shared Business Context*:
 
 1. **Business Intelligence Engine**
    - Ingesti & validasi data transaksi harian (.CSV/Manual).
@@ -121,7 +121,7 @@ cd Skripsi
 
 ## 📚 Interactive Swagger / OpenAPI Documentation
 
-Backend APH YAH dilengkapi dengan dokumentasi OpenAPI 3.0 interaktif:
+Backend Strategiku dilengkapi dengan dokumentasi OpenAPI 3.0 interaktif:
 
 - **Swagger UI**: [http://localhost:5000/api/docs](http://localhost:5000/api/docs)
 - **Raw OpenAPI JSON Spec**: `http://localhost:5000/api/docs.json`
@@ -141,7 +141,7 @@ Swagger mencakup seluruh endpoint:
 
 ## 🌐 Vercel Deployment Guide (Separate Deployments)
 
-Platform APH YAH dirancang untuk dideploy secara terpisah di Vercel.
+Platform Strategiku dirancang untuk dideploy secara terpisah di Vercel.
 
 ### Deploying Backend to Vercel
 1. Pastikan file `backend/vercel.json` dan `backend/api/index.ts` sudah ada.
@@ -188,4 +188,4 @@ Untuk menguji alur lengkap (*Golden Path*) aplikasi tanpa registrasi manual:
 
 ## 📄 License & Attribution
 
-APH YAH Platform © 2026 - Designed & Built for West Java UMKM Business Acceleration.
+Strategiku Platform © 2026 - Designed & Built for West Java UMKM Business Acceleration.

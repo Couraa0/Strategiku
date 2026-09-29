@@ -11,17 +11,17 @@ export const Navbar: React.FC<NavbarProps> = ({ title, subtitle }) => {
   const { business } = useAuth();
 
   return (
-    <header className="h-16 border-b border-slate-200/80 bg-white/80 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-6 ml-64 shadow-xs">
+    <header className="h-20 border-b border-slate-200/80 bg-white/90 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-8 shadow-xs">
       {/* Title / Breadcrumb */}
-      <div>
-        <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2 tracking-tight">
+      <div className="shrink-0 max-w-md">
+        <h2 className="text-xl font-black text-slate-900 flex items-center gap-2 tracking-tight">
           {title || 'Dashboard'}
         </h2>
-        {subtitle && <p className="text-xs text-slate-500 font-medium">{subtitle}</p>}
+        {subtitle && <p className="text-xs text-slate-500 font-medium truncate mt-0.5">{subtitle}</p>}
       </div>
 
       {/* Header Actions */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 shrink-0">
         {/* Business Region Tag */}
         <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-50 border border-sky-200 text-xs font-semibold text-sky-800 shadow-2xs">
           <MapPin className="w-3.5 h-3.5 text-sky-500" />

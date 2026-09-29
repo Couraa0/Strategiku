@@ -103,19 +103,19 @@ export const LandingPage: React.FC = () => {
 
   const faqs = [
     {
-      q: 'Apa itu APH YAH dan untuk siapa platform ini dirancang?',
-      a: 'APH YAH (Dari Data Usaha Menjadi Arah Pertumbuhan) adalah Next-Gen Business Growth Intelligence Platform khusus untuk UMKM di Jawa Barat. Platform ini bukan kasir atau POS biasa, melainkan engine cerdas yang mengolah data transaksi harian & profil usaha menjadi arah pertumbuhan terukur, pencocokan peluang Jabar (ekspor, halal, pembiayaan), serta pendampingan AI RAG 24/7.',
+      q: 'Apa itu Strategiku dan untuk siapa platform ini dirancang?',
+      a: 'Strategiku (Dari Data Usaha Menjadi Arah Pertumbuhan) adalah Next-Gen Business Growth Intelligence Platform khusus untuk UMKM di Jawa Barat. Platform ini bukan kasir atau POS biasa, melainkan engine cerdas yang mengolah data transaksi harian & profil usaha menjadi arah pertumbuhan terukur, pencocokan peluang Jabar (ekspor, halal, pembiayaan), serta pendampingan AI RAG 24/7.',
     },
     {
-      q: 'Bagaimana cara APH YAH menjaga keamanan data bisnis saya?',
+      q: 'Bagaimana cara Strategiku menjaga keamanan data bisnis saya?',
       a: 'Seluruh data transaksi dan profil usaha disimpan secara terenkripsi menggunakan infrastruktur PostgreSQL Supabase dengan perizinan berbasis Row Level Security (RLS). Data usaha Anda tidak akan pernah dijual atau dibagikan ke pihak ketiga tanpa izin.',
     },
     {
-      q: 'Apa saja 3 Intelligence Engines yang ada di APH YAH?',
-      a: 'Tiga mesin cerdas APH YAH meliputi: (1) Business Intelligence Engine untuk agregasi omset & tren produk, (2) Opportunity Matcher Engine untuk pencocokan program kurasi & bantuan Jawa Barat berbasis skor %, dan (3) AI Growth Assistant berbasis RAG yang memberikan jawaban grounded dari dokumen resmi usaha.',
+      q: 'Apa saja 3 Intelligence Engines yang ada di Strategiku?',
+      a: 'Tiga mesin cerdas Strategiku meliputi: (1) Business Intelligence Engine untuk agregasi omset & tren produk, (2) Opportunity Matcher Engine untuk pencocokan program kurasi & bantuan Jawa Barat berbasis skor %, dan (3) AI Growth Assistant berbasis RAG yang memberikan jawaban grounded dari dokumen resmi usaha.',
     },
     {
-      q: 'Apakah saya bisa mencoba APH YAH secara gratis?',
+      q: 'Apakah saya bisa mencoba Strategiku secara gratis?',
       a: 'Ya! Anda dapat langsung mendaftar secara gratis atau mencoba akun demo "Kopi Karawang Heritage" dengan mengklik tombol "Demo Account" di navigasi atas tanpa perlu melakukan pendaftaran terlebih dahulu.',
     },
     {
@@ -124,7 +124,7 @@ export const LandingPage: React.FC = () => {
     },
     {
       q: 'Apakah platform ini mendukung seluruh kota & kabupaten di Jawa Barat?',
-      a: 'Tentu. APH YAH mencakup seluruh 27 Kabupaten/Kota di Jawa Barat (Bandung, Karawang, Bekasi, Bogor, Cirebon, Sukabumi, Tasikmalaya, dll) dengan basis data peluang yang disesuaikan dengan fokus program Dinas Koperasi & UMKM daerah setempat.',
+      a: 'Tentu. Strategiku mencakup seluruh 27 Kabupaten/Kota di Jawa Barat (Bandung, Karawang, Bekasi, Bogor, Cirebon, Sukabumi, Tasikmalaya, dll) dengan basis data peluang yang disesuaikan dengan fokus program Dinas Koperasi & UMKM daerah setempat.',
     },
   ];
 
@@ -134,18 +134,9 @@ export const LandingPage: React.FC = () => {
       <header className="border-b border-slate-200/80 bg-white/85 backdrop-blur-xl sticky top-0 z-50 shadow-xs">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-sky-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/25 animate-pulse-glow">
-              <Sparkles className="w-6 h-6 text-white font-bold" />
-            </div>
-            <div>
-              <span className="font-black text-2xl tracking-tight text-slate-900 flex items-center gap-2">
-                APH YAH
-                <span className="text-[10px] font-extrabold tracking-widest px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-700 border border-sky-300">
-                  NEXT-GEN TECH
-                </span>
-              </span>
-              <p className="text-[11px] text-sky-600 font-semibold">UMKM Business Growth Intelligence</p>
-            </div>
+            <Link to="/" className="flex items-center gap-3">
+              <img src="/logo/Logo+Text+Landscape.png" alt="Strategiku Logo" className="h-12 w-auto" />
+            </Link>
           </div>
 
           <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600" aria-label="Main Navigation">
@@ -157,12 +148,12 @@ export const LandingPage: React.FC = () => {
           </nav>
 
           <div className="flex items-center gap-3">
-            <button
-              onClick={handleDemoLogin}
-              className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-600 text-xs font-bold border border-slate-200 hover:border-sky-300 transition-all shadow-2xs active:scale-95"
+            <Link
+              to="/umkm-hub"
+              className="px-4.5 py-2.5 rounded-xl bg-white hover:bg-sky-50 text-sky-700 hover:text-sky-800 text-xs font-black border-2 border-sky-400/80 shadow-md shadow-sky-500/10 transition-all active:scale-95"
             >
-              Demo Account
-            </button>
+              UMKM Hub
+            </Link>
             <Link
               to="/login"
               className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 hover:from-sky-400 hover:to-blue-500 text-white text-xs font-bold shadow-md shadow-sky-500/25 transition-all flex items-center gap-1.5 active:scale-95"
@@ -189,7 +180,7 @@ export const LandingPage: React.FC = () => {
         </h1>
 
         <p className="text-slate-600 text-base md:text-xl max-w-3xl mx-auto leading-relaxed mb-10 font-medium">
-          APH YAH mengolah data penjualan harian menjadi arah pertumbuhan bisnis terukur, menghubungkan usaha Anda dengan peluang kurasi ekspor & pembiayaan di Jawa Barat, serta mendampingi aksi cepat via RAG AI Consultant.
+          Strategiku mengolah data penjualan harian menjadi arah pertumbuhan bisnis terukur, menghubungkan usaha Anda dengan peluang kurasi ekspor & pembiayaan di Jawa Barat, serta mendampingi aksi cepat via RAG AI Consultant.
         </p>
 
         {/* Call to Action Buttons */}
@@ -214,7 +205,7 @@ export const LandingPage: React.FC = () => {
         <div className="relative max-w-5xl mx-auto mb-16 rounded-3xl p-3 bg-white/60 border border-slate-200 shadow-2xl shadow-sky-500/10">
           <img
             src="/images/genz_hero.png"
-            alt="APH YAH Next-Gen Tech Savvy Business Growth Intelligence Dashboard Showcase"
+            alt="Strategiku Next-Gen Tech Savvy Business Growth Intelligence Dashboard Showcase"
             className="w-full h-auto rounded-2xl shadow-lg border border-slate-200 object-cover max-h-[520px]"
             loading="eager"
           />
@@ -286,7 +277,7 @@ export const LandingPage: React.FC = () => {
               Hitung Estimasi Potensi Pertumbuhan Omset Usaha Anda
             </h2>
             <p className="text-sky-100 text-sm leading-relaxed font-medium">
-              Geser slider omset bulanan usaha Anda saat ini untuk mensimulasikan kenaikan omset dan jumlah program bantuan terkurasi yang dapat dicocokkan oleh APH YAH.
+              Geser slider omset bulanan usaha Anda saat ini untuk mensimulasikan kenaikan omset dan jumlah program bantuan terkurasi yang dapat dicocokkan oleh Strategiku.
             </p>
 
             {/* Slider Component */}
@@ -535,7 +526,7 @@ export const LandingPage: React.FC = () => {
               Kopi Karawang Heritage: Dari Usaha Lokal Ke Pasar Ekspor
             </h2>
             <p className="text-sky-100 text-sm leading-relaxed font-medium">
-              Dengan mengunggah data transaksi ke APH YAH, Kopi Karawang mendapatkan wawasan bahwa varian Robusta Karawang memiliki margin tertinggi. Platform lalu secara otomatis mencocokkan usaha dengan <strong className="text-white">Program Kurasi Ekspor Disindag Jabar (92% Match)</strong> dan mendampingi proses pendaftaran melalui AI Assistant.
+              Dengan mengunggah data transaksi ke Strategiku, Kopi Karawang mendapatkan wawasan bahwa varian Robusta Karawang memiliki margin tertinggi. Platform lalu secara otomatis mencocokkan usaha dengan <strong className="text-white">Program Kurasi Ekspor Disindag Jabar (92% Match)</strong> dan mendampingi proses pendaftaran melalui AI Assistant.
             </p>
             <div className="grid grid-cols-2 gap-4 pt-2">
               <div className="p-4 rounded-2xl bg-white/10 border border-white/20">
@@ -558,7 +549,7 @@ export const LandingPage: React.FC = () => {
           <div className="rounded-2xl p-2 bg-white/20 border border-white/30 overflow-hidden shadow-xl">
             <img
               src="/images/umkm_growth.png"
-              alt="West Java SME Coffee Roaster Analyzing Business Growth Metrics with APH YAH Platform"
+              alt="West Java SME Coffee Roaster Analyzing Business Growth Metrics with Strategiku Platform"
               className="w-full h-auto rounded-xl object-cover max-h-[380px]"
               loading="lazy"
             />
@@ -574,7 +565,7 @@ export const LandingPage: React.FC = () => {
             <span>PERTANYAAN UMUM</span>
           </div>
           <h2 className="text-3xl font-black text-slate-900 tracking-tight">Frequently Asked Questions</h2>
-          <p className="text-slate-600 text-sm font-medium mt-2">Segala sesuatu yang perlu Anda ketahui tentang APH YAH Platform.</p>
+          <p className="text-slate-600 text-sm font-medium mt-2">Segala sesuatu yang perlu Anda ketahui tentang Strategiku Platform.</p>
         </div>
 
         <div className="space-y-4">
@@ -610,10 +601,7 @@ export const LandingPage: React.FC = () => {
           {/* Brand Col */}
           <div className="space-y-4 md:col-span-1">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 via-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <span className="font-black text-xl text-slate-900 tracking-tight">APH YAH</span>
+              <img src="/logo/Logo+Text+Landscape.png" alt="Strategiku Logo" className="h-10 w-auto" />
             </div>
             <p className="text-xs text-slate-500 leading-relaxed font-medium">
               Integrated UMKM Business Growth Intelligence Platform khusus Jawa Barat. Mengubah data transaksi menjadi arah pertumbuhan terukur.
@@ -683,7 +671,7 @@ export const LandingPage: React.FC = () => {
 
         {/* Bottom Copyright Bar */}
         <div className="max-w-7xl mx-auto pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-medium text-slate-500">
-          <p>© 2026 APH YAH Platform — Integrated UMKM Business Growth Intelligence. All rights reserved.</p>
+          <p>© 2026 Strategiku Platform — Integrated UMKM Business Growth Intelligence. All rights reserved.</p>
           <p className="font-bold text-sky-600">"Dari Data Usaha Menjadi Arah Pertumbuhan"</p>
         </div>
       </footer>

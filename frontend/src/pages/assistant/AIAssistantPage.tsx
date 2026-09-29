@@ -16,7 +16,7 @@ export const AIAssistantPage: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: 'Halo! Saya AI Growth Assistant APH YAH. Saya siap menjawab pertanyaan seputar katalog produk, penawaran harga grosir, Sertifikasi Halal SEHATI Jabar, atau syarat pengajuan bantuan usaha berdasarkan knowledge base resmi usaha.',
+      content: 'Halo! Saya AI Growth Assistant Strategiku. Saya siap menjawab pertanyaan seputar katalog produk, penawaran harga grosir, Sertifikasi Halal SEHATI Jabar, atau syarat pengajuan bantuan usaha berdasarkan knowledge base resmi usaha.',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ]);

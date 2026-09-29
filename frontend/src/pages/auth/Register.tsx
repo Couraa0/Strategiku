@@ -53,19 +53,8 @@ export const Register: React.FC = () => {
 
         {/* Top Brand Header */}
         <div className="relative z-10">
-          <Link to="/" className="inline-flex items-center gap-3 group">
-            <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
-              <Sparkles className="w-6 h-6 text-white font-bold" />
-            </div>
-            <div>
-              <span className="font-black text-2xl tracking-tight flex items-center gap-2">
-                APH YAH
-                <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-white/20 border border-white/30">
-                  WEST JAVA
-                </span>
-              </span>
-              <p className="text-xs text-sky-100 font-medium">UMKM Business Growth Intelligence Platform</p>
-            </div>
+          <Link to="/" className="inline-flex items-center gap-3 group hover:scale-105 transition-transform bg-white/90 px-4 py-2 rounded-2xl shadow-xl">
+            <img src="/logo/Logo+Text+Landscape.png" alt="Strategiku Logo" className="h-9 w-auto" />
           </Link>
         </div>
 
@@ -101,7 +90,7 @@ export const Register: React.FC = () => {
 
         {/* Bottom Footer Info */}
         <div className="relative z-10 flex items-center justify-between text-xs text-sky-200 border-t border-white/20 pt-6">
-          <p>© 2026 APH YAH Platform.</p>
+          <p>© 2026 Strategiku Platform.</p>
           <span className="flex items-center gap-1 font-bold text-white">
             <ShieldCheck className="w-4 h-4 text-emerald-300" /> PostgreSQL Supabase Secured
           </span>
@@ -113,11 +102,8 @@ export const Register: React.FC = () => {
         <div className="w-full max-w-md space-y-6 my-auto">
           {/* Header Title */}
           <div className="space-y-2">
-            <Link to="/" className="inline-flex lg:hidden items-center gap-2.5 group mb-3">
-              <div className="w-10 h-10 rounded-2xl bg-sky-500 flex items-center justify-center text-white shadow-md">
-                <Sparkles className="w-5 h-5 font-bold" />
-              </div>
-              <span className="font-black text-2xl tracking-tight text-slate-900">APH YAH</span>
+            <Link to="/" className="inline-flex lg:hidden items-center group mb-3">
+              <img src="/logo/Logo+Text+Landscape.png" alt="Strategiku Logo" className="h-9 w-auto" />
             </Link>
             <h2 className="text-2xl font-black text-slate-900 tracking-tight">Daftar Akun Usaha Baru</h2>
             <p className="text-xs text-slate-500 font-semibold">Transformasikan data penjualan Anda menjadi arah pertumbuhan</p>

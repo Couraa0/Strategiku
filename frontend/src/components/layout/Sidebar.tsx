@@ -12,6 +12,7 @@ import {
   BookOpen,
   Settings,
   LogOut,
+  Award,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -42,7 +43,7 @@ export const Sidebar: React.FC = () => {
           {badge && (
             <span
               className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold ${
-                isActive ? 'bg-white/20 text-white' : 'bg-indigo-100 text-indigo-700'
+                isActive ? 'bg-white/20 text-white' : 'bg-fuchsia-100 text-fuchsia-700'
               }`}
             >
               {badge}
@@ -57,22 +58,9 @@ export const Sidebar: React.FC = () => {
     <aside className="w-64 bg-white/95 border-r border-slate-200/90 flex flex-col justify-between h-screen fixed left-0 top-0 z-40 backdrop-blur-xl shadow-sm">
       {/* Brand Header */}
       <div>
-        <div className="p-5 border-b border-slate-100">
+        <div className="p-4 border-b border-slate-100">
           <NavLink to="/dashboard" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-sky-500 via-blue-500 to-indigo-600 flex items-center justify-center shadow-md shadow-sky-500/25 group-hover:scale-105 transition-transform">
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="font-extrabold text-lg tracking-tight text-slate-900 flex items-center gap-1.5">
-                APH YAH
-                <span className="text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 font-bold border border-sky-200">
-                  GEN-Z
-                </span>
-              </h1>
-              <p className="text-[11px] text-sky-600 font-semibold truncate max-w-[150px]">
-                Growth Intelligence
-              </p>
-            </div>
+            <img src="/logo/Logo+Text+Landscape.png" alt="Strategiku Logo" className="h-9 w-auto" />
           </NavLink>
         </div>
 

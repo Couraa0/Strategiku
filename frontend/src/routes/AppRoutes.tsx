@@ -18,6 +18,8 @@ import { RecommendationsPage } from '../pages/recommendations/RecommendationsPag
 import { KnowledgeBasePage } from '../pages/knowledge/KnowledgeBasePage';
 import { AIAssistantPage } from '../pages/assistant/AIAssistantPage';
 import { SettingsPage } from '../pages/settings/SettingsPage';
+import { UMKMHubPage } from '../pages/umkm-hub/UMKMHubPage';
+import { UMKMHubDetailPage } from '../pages/umkm-hub/UMKMHubDetailPage';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -25,7 +27,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400 text-xs font-mono">
-        Memuat APH YAH Platform...
+        Memuat Strategiku Platform...
       </div>
     );
   }
@@ -44,6 +46,8 @@ export const AppRoutes: React.FC = () => {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/umkm-hub" element={<UMKMHubPage />} />
+      <Route path="/umkm-hub/:id" element={<UMKMHubDetailPage />} />
 
       {/* Protected Routes */}
       <Route
@@ -142,7 +146,6 @@ export const AppRoutes: React.FC = () => {
           </ProtectedRoute>
         }
       />
-
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
