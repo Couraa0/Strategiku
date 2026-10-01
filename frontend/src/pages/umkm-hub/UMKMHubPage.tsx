@@ -12,6 +12,8 @@ import {
   ChevronDown,
   Info,
   Phone,
+  UserPlus,
+  ArrowLeft,
 } from 'lucide-react';
 import api from '../../lib/api';
 
@@ -108,13 +110,18 @@ export const UMKMHubPage: React.FC = () => {
       {/* Top Header Navbar */}
       <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur-xl sticky top-0 z-50 shadow-xs">
         <div className="max-w-7xl mx-auto px-6 h-18 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button onClick={() => navigate('/')} className="hover:opacity-90 transition-opacity">
-              <img src="/logo/Logo+Text+Landscape.png" alt="Strategiku Logo" className="h-10 w-auto" />
+          <div className="flex items-center gap-4">
+            <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-full hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors" aria-label="Kembali">
+              <ArrowLeft className="w-5 h-5" />
             </button>
-            <span className="hidden sm:inline-block text-[10px] font-extrabold tracking-wider px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-700 border border-sky-300">
-              PUBLIC UMKM HUB
-            </span>
+            <div className="flex items-center gap-3">
+              <button onClick={() => navigate('/')} className="hover:opacity-90 transition-opacity">
+                <img src="/logo/Logo+Text+Landscape.png" alt="Strategiku Logo" className="h-10 w-auto" />
+              </button>
+              <span className="hidden sm:inline-block text-[10px] font-extrabold tracking-wider px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-700 border border-sky-300">
+                PUBLIC UMKM HUB
+              </span>
+            </div>
           </div>
 
           <div className="flex items-center gap-3">
@@ -149,21 +156,25 @@ export const UMKMHubPage: React.FC = () => {
         </div>
 
         {/* Info Banner for adding business */}
-        <div className="bg-sky-50 border border-sky-200 p-4 rounded-2xl flex items-start gap-3 shadow-xs">
-          <Info className="w-5 h-5 text-sky-600 shrink-0 mt-0.5" />
-          <div>
-            <p className="text-xs font-bold text-sky-900">Ingin menambahkan usaha Anda di UMKM Hub?</p>
-            <p className="text-[11px] text-sky-700 font-medium mt-0.5">
-              Daftarkan usaha Anda terlebih dahulu melalui{' '}
-              <button
-                onClick={() => navigate('/login')}
-                className="underline font-bold text-sky-800 hover:text-sky-950 transition-colors"
-              >
-                Dashboard Strategiku
-              </button>
-              , lalu tambahkan informasi usaha Anda ke katalog UMKM Hub.
-            </p>
+        <div className="bg-sky-50 border border-sky-200 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+          <div className="flex items-start gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-sky-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-sky-500/20 mt-0.5">
+              <Info className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-sm font-black text-sky-950">Ingin Menambahkan Usaha Anda di UMKM Hub?</p>
+              <p className="text-xs text-sky-700 font-medium mt-0.5 max-w-2xl leading-relaxed">
+                Anda harus mendaftarkan akun usaha Anda terlebih dahulu di platform Strategiku untuk dapat mengunggah dan menampilkan informasi usaha Anda pada katalog UMKM Hub.
+              </p>
+            </div>
           </div>
+          <button
+            onClick={() => navigate('/register')}
+            className="px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-xs shadow-md shadow-sky-600/20 transition-all active:scale-95 shrink-0 flex items-center gap-2"
+          >
+            <UserPlus className="w-4 h-4" />
+            <span>Daftar Disini</span>
+          </button>
         </div>
 
         {/* Filters & Search */}

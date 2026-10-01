@@ -32,15 +32,23 @@ import {
   Code2,
   Building2,
   ArrowUpRight,
+  User,
+  LayoutDashboard,
+  LogOut,
+  ChevronRight,
+  Activity,
+  Compass,
+  Heart,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export const LandingPage: React.FC = () => {
-  const { login } = useAuth();
+  const { user, business, isAuthenticated, login, logout } = useAuth();
   const navigate = useNavigate();
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [monthlyRevenue, setMonthlyRevenue] = useState<number>(45000000);
   const [activeRegion, setActiveRegion] = useState<string>('Karawang');
+  const [userMenuOpen, setUserMenuOpen] = useState<boolean>(false);
 
   const handleDemoLogin = async () => {
     await login('demo@aphyah.id', 'Demo123!');
@@ -104,19 +112,19 @@ export const LandingPage: React.FC = () => {
   const faqs = [
     {
       q: 'Apa itu Strategiku dan untuk siapa platform ini dirancang?',
-      a: 'Strategiku (Dari Data Usaha Menjadi Arah Pertumbuhan) adalah Next-Gen Business Growth Intelligence Platform khusus untuk UMKM di Jawa Barat. Platform ini bukan kasir atau POS biasa, melainkan engine cerdas yang mengolah data transaksi harian & profil usaha menjadi arah pertumbuhan terukur, pencocokan peluang Jabar (ekspor, halal, pembiayaan), serta pendampingan AI RAG 24/7.',
+      a: 'Strategiku (Dari Data Usaha Menjadi Arah Pertumbuhan) adalah Next-Gen Business Growth Intelligence Platform khusus untuk UMKM di Jawa Barat. Platform ini bukan sekadar kasir POS, melainkan engine cerdas yang mengolah data transaksi harian & profil usaha menjadi arah pertumbuhan terukur, pencocokan peluang Jabar (ekspor, halal, pembiayaan), serta pendampingan AI RAG 24/7.',
     },
     {
       q: 'Bagaimana cara Strategiku menjaga keamanan data bisnis saya?',
-      a: 'Seluruh data transaksi dan profil usaha disimpan secara terenkripsi menggunakan infrastruktur PostgreSQL Supabase dengan perizinan berbasis Row Level Security (RLS). Data usaha Anda tidak akan pernah dijual atau dibagikan ke pihak ketiga tanpa izin.',
+      a: 'Seluruh data transaksi dan profil usaha disimpan secara terenkripsi menggunakan infrastruktur PostgreSQL Supabase dengan perizinan berbasis Row Level Security (RLS). Data usaha Anda aman dan tidak akan pernah dibagikan ke pihak ketiga tanpa izin.',
     },
     {
       q: 'Apa saja 3 Intelligence Engines yang ada di Strategiku?',
-      a: 'Tiga mesin cerdas Strategiku meliputi: (1) Business Intelligence Engine untuk agregasi omset & tren produk, (2) Opportunity Matcher Engine untuk pencocokan program kurasi & bantuan Jawa Barat berbasis skor %, dan (3) AI Growth Assistant berbasis RAG yang memberikan jawaban grounded dari dokumen resmi usaha.',
+      a: 'Tiga mesin cerdas Strategiku meliputi: (1) Business Intelligence Engine untuk agregasi omset & tren produk, (2) Opportunity Matcher Engine untuk pencocokan program kurasi & bantuan Jawa Barat berbasis skor %, dan (3) AI Growth Assistant berbasis RAG yang memberikan rekomendasi konkret berdasarkan data usaha Anda.',
     },
     {
       q: 'Apakah saya bisa mencoba Strategiku secara gratis?',
-      a: 'Ya! Anda dapat langsung mendaftar secara gratis atau mencoba akun demo "Kopi Karawang Heritage" dengan mengklik tombol "Demo Account" di navigasi atas tanpa perlu melakukan pendaftaran terlebih dahulu.',
+      a: 'Ya! Anda dapat langsung mendaftar secara gratis atau mencoba akun demo "Kopi Karawang Heritage" dengan mengklik tombol "Try Live Demo" di navigasi tanpa perlu melakukan pendaftaran terlebih dahulu.',
     },
     {
       q: 'Bagaimana cara memasukkan data penjualan harian ke dalam platform?',
@@ -130,53 +138,114 @@ export const LandingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-sky-500 selection:text-white overflow-x-hidden">
-      {/* Top Floating Header Navbar */}
-      <header className="border-b border-slate-200/80 bg-white/85 backdrop-blur-xl sticky top-0 z-50 shadow-xs">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link to="/" className="flex items-center gap-3">
-              <img src="/logo/Logo+Text+Landscape.png" alt="Strategiku Logo" className="h-12 w-auto" />
+      {/* Top Floating Navbar (Modern Gen-Z Pill) */}
+      <div className="fixed top-4 left-0 right-0 z-50 px-4 flex justify-center pointer-events-none">
+        <header className="pointer-events-auto bg-white/70 backdrop-blur-2xl border border-white/50 shadow-2xl shadow-sky-900/5 rounded-full px-3 py-2.5 flex items-center justify-between w-full max-w-6xl transition-all duration-300">
+          <div className="flex items-center pr-4 border-r border-slate-200/50">
+            <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
+              <img src="/logo/Logo+Text+Landscape.png" alt="Strategiku Logo" className="h-8 md:h-10 w-auto drop-shadow-sm" />
             </Link>
           </div>
 
-          <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600" aria-label="Main Navigation">
-            <a href="#concept" className="hover:text-sky-600 transition-colors">Platform Journey</a>
-            <a href="#calculator" className="hover:text-sky-600 transition-colors">Growth Calculator</a>
-            <a href="#engines" className="hover:text-sky-600 transition-colors">3 Intelligence Engines</a>
-            <a href="#regions" className="hover:text-sky-600 transition-colors">Jabar Hubs</a>
-            <a href="#faq" className="hover:text-sky-600 transition-colors">FAQ</a>
+          <nav className="hidden lg:flex items-center gap-1 p-1 bg-slate-100/50 rounded-full border border-slate-200/50" aria-label="Main Navigation">
+            <a href="#concept" className="px-5 py-2 text-[11px] font-extrabold text-slate-600 hover:text-sky-700 hover:bg-white rounded-full transition-all shadow-sm shadow-transparent hover:shadow-black/5">Platform Journey</a>
+            <a href="#calculator" className="px-5 py-2 text-[11px] font-extrabold text-slate-600 hover:text-sky-700 hover:bg-white rounded-full transition-all shadow-sm shadow-transparent hover:shadow-black/5">Calculator</a>
+            <a href="#engines" className="px-5 py-2 text-[11px] font-extrabold text-slate-600 hover:text-sky-700 hover:bg-white rounded-full transition-all shadow-sm shadow-transparent hover:shadow-black/5">AI Engines</a>
+            <a href="#regions" className="px-5 py-2 text-[11px] font-extrabold text-slate-600 hover:text-sky-700 hover:bg-white rounded-full transition-all shadow-sm shadow-transparent hover:shadow-black/5">Jabar Hubs</a>
+            <a href="#faq" className="px-5 py-2 text-[11px] font-extrabold text-slate-600 hover:text-sky-700 hover:bg-white rounded-full transition-all shadow-sm shadow-transparent hover:shadow-black/5">FAQ</a>
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 pl-4">
             <Link
               to="/umkm-hub"
-              className="px-4.5 py-2.5 rounded-xl bg-white hover:bg-sky-50 text-sky-700 hover:text-sky-800 text-xs font-black border-2 border-sky-400/80 shadow-md shadow-sky-500/10 transition-all active:scale-95"
+              className="hidden md:flex px-4 py-2.5 rounded-full bg-white hover:bg-sky-50 text-sky-700 text-[11px] font-black border border-sky-100 shadow-sm transition-all active:scale-95 items-center gap-1.5"
             >
-              UMKM Hub
+              <Compass className="w-3.5 h-3.5 text-sky-500" />
+              <span>UMKM Hub</span>
             </Link>
-            <Link
-              to="/login"
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 hover:from-sky-400 hover:to-blue-500 text-white text-xs font-bold shadow-md shadow-sky-500/25 transition-all flex items-center gap-1.5 active:scale-95"
-            >
-              <span>Mulai Sekarang</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-        </div>
-      </header>
 
-      {/* Hero Section */}
-      <section className="relative pt-16 pb-20 px-6 max-w-7xl mx-auto text-center" aria-label="Hero Introduction">
+            {isAuthenticated && user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-sky-50 hover:bg-sky-100/80 text-sky-900 border border-sky-200 transition-all font-bold text-xs shadow-sm"
+                >
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-sky-500 via-blue-600 to-indigo-600 text-white font-black flex items-center justify-center text-xs shadow-sm">
+                    {(user.name || 'U').charAt(0).toUpperCase()}
+                  </div>
+                  <span className="truncate max-w-[130px] font-extrabold text-[11px] pr-1">{user.name || business?.name || 'Pemilik Usaha'}</span>
+                  <ChevronDown className={`w-3.5 h-3.5 text-sky-600 transition-transform duration-200 mr-2 ${userMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {userMenuOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setUserMenuOpen(false)} />
+                    <div className="absolute right-0 mt-3 w-64 bg-white/90 backdrop-blur-xl rounded-3xl border border-slate-200/80 shadow-2xl py-2 z-50 animate-in fade-in slide-in-from-top-4 duration-200 overflow-hidden">
+                      <div className="px-5 py-3 border-b border-slate-100/80 bg-slate-50/50">
+                        <p className="text-[13px] font-black text-slate-900 truncate">{user.name || 'Pemilik Usaha'}</p>
+                        <p className="text-[11px] text-slate-500 font-medium truncate">{user.email}</p>
+                      </div>
+
+                      <div className="p-2 space-y-1">
+                        <button
+                          onClick={() => {
+                            setUserMenuOpen(false);
+                            navigate('/dashboard');
+                          }}
+                          className="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-700 rounded-2xl transition-all flex items-center gap-3"
+                        >
+                          <div className="p-1.5 rounded-lg bg-sky-100/50 text-sky-600"><LayoutDashboard className="w-3.5 h-3.5" /></div>
+                          <span>Kembali ke Dashboard</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setUserMenuOpen(false);
+                            logout();
+                          }}
+                          className="w-full text-left px-4 py-2.5 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-2xl transition-all flex items-center gap-3"
+                        >
+                          <div className="p-1.5 rounded-lg bg-rose-100/50 text-rose-600"><LogOut className="w-3.5 h-3.5" /></div>
+                          <span>Logout / Keluar</span>
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="px-5 py-2.5 rounded-full bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 hover:from-sky-400 hover:to-blue-500 text-white text-[11px] font-extrabold shadow-lg shadow-sky-500/30 transition-all flex items-center gap-1.5 active:scale-95"
+              >
+                <span>Mulai Sekarang</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            )}
+          </div>
+        </header>
+      </div>
+
+      {/* Hero Section Wrapper with Grid Background */}
+      <div className="relative w-full overflow-hidden">
+        {/* Modern Gen-Z Grid Background */}
+        <div className="absolute inset-0 -z-10 h-full w-full bg-slate-50 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
+        
+        {/* Hero Section */}
+        <section className="relative pt-36 md:pt-48 pb-20 px-6 max-w-7xl mx-auto text-center" aria-label="Hero Introduction">
+          {/* Ambient Glow Effects */}
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-sky-400/20 via-blue-500/10 to-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
+
         {/* Gen-Z Glowing Tech Pill */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sky-100 border border-sky-300 text-sky-700 text-xs font-extrabold mb-8 shadow-xs animate-float">
-          <Zap className="w-4 h-4 text-sky-500 animate-bounce" />
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sky-100/90 border border-sky-300 text-sky-700 text-xs font-extrabold mb-8 shadow-xs animate-pulse">
+          <Zap className="w-4 h-4 text-sky-500" />
           <span>NEXT-GEN UMKM GROWTH ENGINE JAWA BARAT</span>
         </div>
 
         {/* Hero Title */}
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight text-slate-900 max-w-4xl mx-auto leading-tight mb-6">
           From Business Data to <br />
-          <span className="gradient-text-hero">Business Growth</span>
+          <span className="bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 bg-clip-text text-transparent">Business Growth</span>
         </h1>
 
         <p className="text-slate-600 text-base md:text-xl max-w-3xl mx-auto leading-relaxed mb-10 font-medium">
@@ -201,391 +270,361 @@ export const LandingPage: React.FC = () => {
           </button>
         </div>
 
-        {/* Tech-Savvy Hero Image Showcase */}
-        <div className="relative max-w-5xl mx-auto mb-16 rounded-3xl p-3 bg-white/60 border border-slate-200 shadow-2xl shadow-sky-500/10">
+        {/* Tech Showcase Mockup Image */}
+        <div className="relative max-w-5xl mx-auto mb-16 rounded-3xl p-3 bg-white/70 backdrop-blur-md border border-slate-200 shadow-2xl shadow-sky-500/10">
           <img
             src="/images/genz_hero.png"
             alt="Strategiku Next-Gen Tech Savvy Business Growth Intelligence Dashboard Showcase"
             className="w-full h-auto rounded-2xl shadow-lg border border-slate-200 object-cover max-h-[520px]"
             loading="eager"
           />
-          <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-white px-6 py-3 rounded-full border border-sky-200 shadow-xl flex items-center gap-4 text-xs font-bold text-slate-800">
-            <span className="flex items-center gap-1.5 text-sky-600">
-              <Cpu className="w-4 h-4 text-sky-500" /> Powered by RAG AI Architecture
-            </span>
-            <span className="text-slate-300">|</span>
-            <span className="flex items-center gap-1.5 text-indigo-600">
-              <Award className="w-4 h-4 text-indigo-500" /> Supabase PostgreSQL Connected
-            </span>
-          </div>
         </div>
 
-        {/* Core Value Journey Flow Banner */}
-        <div id="concept" className="glass-panel rounded-3xl p-8 border border-slate-200/90 shadow-xl max-w-5xl mx-auto bg-white/90">
-          <div className="flex items-center justify-between mb-6">
-            <p className="text-xs uppercase tracking-widest font-extrabold text-sky-600 flex items-center gap-2">
-              <Globe2 className="w-4 h-4" /> CORE JOURNEY PLATFORM
+        {/* Highlight Stats Row */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+          <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-1">
+            <span className="text-2xl md:text-3xl font-black text-sky-600">27</span>
+            <span className="text-xs text-slate-500 font-bold block uppercase tracking-wider">Kab/Kota Jabar</span>
+          </div>
+          <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-1">
+            <span className="text-2xl md:text-3xl font-black text-indigo-600">3x</span>
+            <span className="text-xs text-slate-500 font-bold block uppercase tracking-wider">Intelligence Engines</span>
+          </div>
+          <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-1">
+            <span className="text-2xl md:text-3xl font-black text-emerald-600">92%</span>
+            <span className="text-xs text-slate-500 font-bold block uppercase tracking-wider">Akurasi Rekomendasi</span>
+          </div>
+          <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-1">
+            <span className="text-2xl md:text-3xl font-black text-amber-500">24/7</span>
+            <span className="text-xs text-slate-500 font-bold block uppercase tracking-wider">RAG AI Assistant</span>
+          </div>
+        </div>
+      </section>
+      </div>
+
+      {/* Concept & Platform Journey */}
+      <section id="concept" className="py-20 px-6 max-w-7xl mx-auto border-t border-slate-200/80">
+        <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+          <span className="px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-extrabold uppercase tracking-wider">
+            PLATFORM JOURNEY
+          </span>
+          <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
+            Bagaimana Strategiku Mendorong Bisnis Anda
+          </h2>
+          <p className="text-slate-600 text-sm md:text-base font-medium">
+            Empat langkah sistematis mengubah data penjualan pasif menjadi aksi nyata eksekusi pertumbuhan.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4 hover:shadow-xl hover:border-sky-300 transition-all duration-300">
+            <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center font-black text-lg border border-sky-100 shadow-xs">
+              01
+            </div>
+            <h3 className="text-lg font-black text-slate-900">Input Data Transaksi</h3>
+            <p className="text-xs text-slate-600 leading-relaxed font-medium">
+              Upload file CSV penjualan harian Anda secara fleksibel tanpa memerlukan pergantian sistem POS kasir yang rumit.
             </p>
-            <span className="text-[11px] px-3 py-1 rounded-full bg-sky-50 text-sky-700 font-bold border border-sky-200">
-              5-Step Closed Loop
-            </span>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 items-center">
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-sky-300 transition-all text-center">
-              <Database className="w-7 h-7 text-sky-500 mx-auto mb-2" />
-              <div className="font-extrabold text-xs text-slate-800">1. DATA</div>
-              <div className="text-[10px] text-slate-500 font-medium">CSV & Profiles</div>
+          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4 hover:shadow-xl hover:border-indigo-300 transition-all duration-300">
+            <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-black text-lg border border-indigo-100 shadow-xs">
+              02
             </div>
-            <div className="hidden md:block text-slate-300 font-extrabold text-lg">→</div>
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-blue-300 transition-all text-center">
-              <TrendingUp className="w-7 h-7 text-blue-500 mx-auto mb-2" />
-              <div className="font-extrabold text-xs text-slate-800">2. INSIGHT</div>
-              <div className="text-[10px] text-slate-500 font-medium">BI Intelligence</div>
+            <h3 className="text-lg font-black text-slate-900">Analisis BI Dashboard</h3>
+            <p className="text-xs text-slate-600 leading-relaxed font-medium">
+              Lihat grafik performa omset, margin profit, tren produk paling lari, dan skor kesehatan usaha secara real-time.
+            </p>
+          </div>
+
+          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4 hover:shadow-xl hover:border-emerald-300 transition-all duration-300">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black text-lg border border-emerald-100 shadow-xs">
+              03
             </div>
-            <div className="hidden md:block text-slate-300 font-extrabold text-lg">→</div>
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-indigo-300 transition-all text-center">
-              <Target className="w-7 h-7 text-indigo-500 mx-auto mb-2" />
-              <div className="font-extrabold text-xs text-slate-800">3. OPPORTUNITY</div>
-              <div className="text-[10px] text-slate-500 font-medium">Matcher Engine</div>
+            <h3 className="text-lg font-black text-slate-900">Matching Peluang Jabar</h3>
+            <p className="text-xs text-slate-600 leading-relaxed font-medium">
+              Sistem mencocokkan profil usaha Anda dengan program pemerintah Jabar (kurasi ekspor, sertifikasi halal, pembiayaan) berbasis skor %.
+            </p>
+          </div>
+
+          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4 hover:shadow-xl hover:border-amber-300 transition-all duration-300">
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-black text-lg border border-amber-100 shadow-xs">
+              04
             </div>
-            <div className="hidden md:block text-slate-300 font-extrabold text-lg">→</div>
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-teal-300 transition-all text-center">
-              <MessageSquare className="w-7 h-7 text-teal-500 mx-auto mb-2" />
-              <div className="font-extrabold text-xs text-slate-800">4. ACTION</div>
-              <div className="text-[10px] text-slate-500 font-medium">RAG Assistant</div>
-            </div>
-            <div className="hidden md:block text-slate-300 font-extrabold text-lg">→</div>
-            <div className="p-4 rounded-2xl bg-sky-500 text-white border border-sky-400 text-center col-span-2 md:col-span-1 shadow-md shadow-sky-500/25">
-              <Zap className="w-7 h-7 text-amber-300 mx-auto mb-2 animate-bounce" />
-              <div className="font-extrabold text-xs">5. GROWTH</div>
-              <div className="text-[10px] text-sky-100 font-medium">Scalable UMKM</div>
-            </div>
+            <h3 className="text-lg font-black text-slate-900">Eksekusi via AI Consultant</h3>
+            <p className="text-xs text-slate-600 leading-relaxed font-medium">
+              Konsultasi langsung dengan RAG AI Assistant 24/7 untuk langkah teknis pembuatan dokumen, SOP, dan strategi pemasaran.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Interactive Growth Estimator Calculator */}
-      <section id="calculator" className="py-20 px-6 max-w-7xl mx-auto border-t border-slate-200/80" aria-label="Interactive Growth Estimator Calculator">
-        <div className="bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 rounded-3xl p-8 lg:p-12 text-white shadow-2xl shadow-sky-500/20 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-          <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-white text-xs font-extrabold uppercase tracking-wider">
-              <Calculator className="w-4 h-4 text-sky-200" />
-              <span>INTERACTIVE GROWTH ESTIMATOR</span>
-            </div>
-            <h2 className="text-3xl lg:text-4xl font-black tracking-tight leading-tight">
-              Hitung Estimasi Potensi Pertumbuhan Omset Usaha Anda
-            </h2>
-            <p className="text-sky-100 text-sm leading-relaxed font-medium">
-              Geser slider omset bulanan usaha Anda saat ini untuk mensimulasikan kenaikan omset dan jumlah program bantuan terkurasi yang dapat dicocokkan oleh Strategiku.
-            </p>
+      {/* Growth Calculator Section */}
+      <section id="calculator" className="py-20 px-6 max-w-7xl mx-auto bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-700 text-white rounded-3xl shadow-2xl shadow-sky-500/20 space-y-12">
+        <div className="text-center max-w-3xl mx-auto space-y-3">
+          <span className="px-3 py-1 rounded-full bg-white/20 text-white text-xs font-extrabold uppercase tracking-wider">
+            INTERACTIVE CALCULATOR
+          </span>
+          <h2 className="text-3xl md:text-5xl font-black tracking-tight">
+            Hitung Potensi Pertumbuhan Usaha Anda
+          </h2>
+          <p className="text-sky-100 text-xs md:text-sm font-medium">
+            Geser slider untuk melihat estimasi tambahan omset dan program bantuan Jawa Barat yang cocok.
+          </p>
+        </div>
 
-            {/* Slider Component */}
-            <div className="space-y-3 pt-2 bg-white/10 p-6 rounded-2xl border border-white/20">
-              <div className="flex items-center justify-between text-xs font-extrabold">
-                <span className="text-sky-100">Omset Bulanan Saat Ini:</span>
-                <span className="text-lg text-white font-black">{formatIDR(monthlyRevenue)}</span>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center bg-white/10 p-6 md:p-8 rounded-3xl border border-white/20 backdrop-blur-md">
+          {/* Controls */}
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-xs font-bold">
+                <span className="text-sky-100">Estimasi Omset Saat Ini (Bulan):</span>
+                <span className="text-lg font-black text-white">{formatIDR(monthlyRevenue)}</span>
               </div>
               <input
                 type="range"
                 min={5000000}
-                max={150000000}
+                max={200000000}
                 step={5000000}
                 value={monthlyRevenue}
                 onChange={(e) => setMonthlyRevenue(Number(e.target.value))}
-                className="w-full h-3 bg-white/30 rounded-lg appearance-none cursor-pointer accent-sky-300"
+                className="w-full h-3 bg-white/20 rounded-lg appearance-none cursor-pointer accent-sky-300"
               />
-              <div className="flex justify-between text-[10px] text-sky-200 font-bold">
+              <div className="flex justify-between text-[10px] text-sky-200 font-medium">
                 <span>Rp 5 Juta</span>
-                <span>Rp 75 Juta</span>
-                <span>Rp 150 Juta</span>
+                <span>Rp 100 Juta</span>
+                <span>Rp 200 Juta</span>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-white/10 border border-white/10 space-y-2 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-sky-100 font-medium">Estimasi Tingkat Pertumbuhan:</span>
+                <span className="font-extrabold text-emerald-300">+{Math.round(estGrowthRate * 100)}% / Periode</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sky-100 font-medium">Potensi Program Jabar Matched:</span>
+                <span className="font-extrabold text-amber-300">{matchedProgramsCount} Program Resmi</span>
               </div>
             </div>
           </div>
 
-          {/* Calculator Results Card */}
-          <div className="bg-white text-slate-900 p-8 rounded-3xl border border-white/30 shadow-2xl space-y-6">
-            <div className="border-b border-slate-100 pb-4">
-              <span className="text-[10px] font-black uppercase tracking-wider text-sky-600 bg-sky-50 px-3 py-1 rounded-full border border-sky-200">
-                PROYEKSI HASIL INTELLIGENCE
-              </span>
-              <h3 className="text-xl font-black text-slate-900 mt-2">Estimasi Performa 6 Bulan</h3>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 rounded-2xl bg-sky-50 border border-sky-200">
-                <span className="text-xs text-slate-500 font-bold block mb-1">Kenaikan Omset Est.</span>
-                <span className="text-2xl font-black text-sky-600">+{Math.round(estGrowthRate * 100)}%</span>
-                <span className="text-[10px] text-sky-700 font-medium block mt-1">+{formatIDR(estRevenueGain)} / bln</span>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-indigo-50 border border-indigo-200">
-                <span className="text-xs text-slate-500 font-bold block mb-1">Potensi Omset Baru</span>
-                <span className="text-2xl font-black text-indigo-600">{formatIDR(estTotalRevenue)}</span>
-                <span className="text-[10px] text-indigo-700 font-medium block mt-1">Proyeksi target bulanan</span>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs font-medium">
-              <span className="text-slate-600">Peluang Jabar Cocok:</span>
-              <span className="font-black text-slate-900 bg-white px-3 py-1 rounded-full border border-slate-200 text-sky-600">
-                {matchedProgramsCount} Program Teridentifikasi
+          {/* Results Display */}
+          <div className="bg-white text-slate-900 p-6 rounded-2xl shadow-xl space-y-6">
+            <div className="border-b border-slate-100 pb-4 space-y-1">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Proyeksi Omset Baru</span>
+              <span className="text-3xl font-black text-sky-600">{formatIDR(estTotalRevenue)}</span>
+              <span className="text-xs font-bold text-emerald-600 block">
+                ▲ Tambahan Omset: +{formatIDR(estRevenueGain)}
               </span>
             </div>
 
-            <button
-              onClick={handleDemoLogin}
-              className="w-full py-3.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-extrabold text-xs shadow-lg shadow-sky-500/25 transition-all flex items-center justify-center gap-2 active:scale-95"
-            >
-              <span>Uji Proyeksi Ini di Demo Dashboard</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            <div className="space-y-3">
+              <span className="text-xs font-bold text-slate-700 block">Program Terkait Relevan:</span>
+              <div className="space-y-2 text-xs font-medium">
+                <div className="flex items-center gap-2 text-slate-600">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                  <span>Program Kurasi Ekspor Kopi & Batik Jabar</span>
+                </div>
+                <div className="flex items-center gap-2 text-slate-600">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                  <span>Subsidi Sertifikasi Halal Gratis (SEHATI)</span>
+                </div>
+                <div className="flex items-center gap-2 text-slate-600">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                  <span>Fasilitasi Kemitraan Rest Area Tol & Retail</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 3 Intelligence Engines Showcase */}
-      <section id="engines" className="py-20 px-6 max-w-7xl mx-auto border-t border-slate-200/80" aria-label="3 Intelligence Engines Architecture">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <span className="text-xs font-extrabold uppercase tracking-widest text-sky-600 bg-sky-50 px-3 py-1 rounded-full border border-sky-200">
-            ENGINE ARCHITECTURE
+      {/* 3 Intelligence Engines Section */}
+      <section id="engines" className="py-20 px-6 max-w-7xl mx-auto space-y-12">
+        <div className="text-center max-w-3xl mx-auto space-y-3">
+          <span className="px-3 py-1 rounded-full bg-sky-100 text-sky-700 text-xs font-extrabold uppercase tracking-wider">
+            CORE ARCHITECTURE
           </span>
-          <h2 className="text-3xl font-black text-slate-900 mt-3 mb-4 tracking-tight">
-            3 Modular Intelligence Engines
+          <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
+            3 Intelligence Engines Strategiku
           </h2>
-          <p className="text-slate-600 text-sm font-medium">
-            Tiga mesin cerdas yang mengolah data usaha secara terpadu untuk percepatan skala bisnis UMKM Jawa Barat.
+          <p className="text-slate-600 text-sm md:text-base font-medium">
+            Tiga pilar kecerdasan buatan dan analitik data yang bekerja selaras memajukan usaha Anda.
           </p>
-        </div>
-
-        {/* RAG Tech Visual Graphics */}
-        <div className="mb-12 max-w-4xl mx-auto rounded-3xl p-3 bg-white border border-slate-200 shadow-xl overflow-hidden">
-          <img
-            src="/images/ai_rag_tech.png"
-            alt="AI Growth Assistant scanning knowledge documents using RAG Architecture"
-            className="w-full h-auto rounded-2xl object-cover max-h-[380px]"
-            loading="lazy"
-          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Engine 1 */}
-          <div className="card-genz p-8 relative overflow-hidden">
-            <div className="w-12 h-12 rounded-2xl bg-sky-100 border border-sky-300 flex items-center justify-center text-sky-600 font-black text-xl mb-6 shadow-xs">
-              1
+          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6 hover:shadow-2xl hover:border-sky-300 transition-all duration-300">
+            <div className="w-14 h-14 rounded-2xl bg-sky-500 text-white flex items-center justify-center shadow-lg shadow-sky-500/30">
+              <Activity className="w-7 h-7" />
             </div>
-            <div className="text-xs font-bold uppercase tracking-wider text-sky-600 mb-1">UNDERSTAND DATA</div>
-            <h3 className="text-xl font-black text-slate-900 mb-3">Business Intelligence</h3>
-            <p className="text-xs text-slate-600 leading-relaxed mb-6 font-medium">
-              Menjawab <span className="text-sky-700 font-bold">"Bagaimana kondisi riil penjualan usaha saya?"</span> dengan analisis otomatis omset, tren transaksi, dan produk favorit.
-            </p>
-            <ul className="space-y-2.5 text-xs text-slate-700 font-medium">
+            <div className="space-y-2">
+              <h3 className="text-xl font-black text-slate-900">1. Business Intelligence Engine</h3>
+              <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                Agregasi otomatis data harian penjualan, visualisasi margin laba bersih, tren omset bulanan, dan evaluasi 6 indikator kesehatan bisnis.
+              </p>
+            </div>
+            <ul className="space-y-2 text-xs text-slate-600 font-medium">
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-sky-500" />
-                <span>KPI Revenue Real-time</span>
+                <span>Profit Margin & Expense Breakdown</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-sky-500" />
-                <span>Visualisasi Grafik Interactive</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-sky-500" />
-                <span>Insight Cards Produk Unggulan</span>
+                <span>Analisis Product Mix & Retensi Pelanggan</span>
               </li>
             </ul>
           </div>
 
-          {/* Engine 2 */}
-          <div className="card-genz p-8 relative overflow-hidden">
-            <div className="w-12 h-12 rounded-2xl bg-blue-100 border border-blue-300 flex items-center justify-center text-blue-600 font-black text-xl mb-6 shadow-xs">
-              2
+          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6 hover:shadow-2xl hover:border-indigo-300 transition-all duration-300">
+            <div className="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-600/30">
+              <Target className="w-7 h-7" />
             </div>
-            <div className="text-xs font-bold uppercase tracking-wider text-blue-600 mb-1">DISCOVER OPPORTUNITIES</div>
-            <h3 className="text-xl font-black text-slate-900 mb-3">Opportunity Matcher</h3>
-            <p className="text-xs text-slate-600 leading-relaxed mb-6 font-medium">
-              Menjawab <span className="text-blue-700 font-bold">"Peluang apa di Jawa Barat yang cocok dengan bisnis saya?"</span> menggunakan scoring kontekstual 0-100%.
-            </p>
-            <ul className="space-y-2.5 text-xs text-slate-700 font-medium">
+            <div className="space-y-2">
+              <h3 className="text-xl font-black text-slate-900">2. Opportunity Matcher Engine</h3>
+              <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                Pencocokan profil bisnis dengan direktori peluang daerah Jawa Barat (kurasi ekspor, halal, etalase suvenir, bantuan pembiayaan) berbasis skor kesesuaian %.
+              </p>
+            </div>
+            <ul className="space-y-2 text-xs text-slate-600 font-medium">
               <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-blue-500" />
-                <span>Skor Match Relevansi %</span>
+                <CheckCircle2 className="w-4 h-4 text-indigo-500" />
+                <span>Matching Skor Kesesuaian %</span>
               </li>
               <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-blue-500" />
-                <span>Program Kurasi & Halal Jabar</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-blue-500" />
-                <span>Penjelasan Provenansi "Why Match"</span>
+                <CheckCircle2 className="w-4 h-4 text-indigo-500" />
+                <span>Direct Contact Penyelenggara & WA</span>
               </li>
             </ul>
           </div>
 
-          {/* Engine 3 */}
-          <div className="card-genz p-8 relative overflow-hidden">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-100 border border-indigo-300 flex items-center justify-center text-indigo-600 font-black text-xl mb-6 shadow-xs">
-              3
+          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6 hover:shadow-2xl hover:border-emerald-300 transition-all duration-300">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30">
+              <MessageSquare className="w-7 h-7" />
             </div>
-            <div className="text-xs font-bold uppercase tracking-wider text-indigo-600 mb-1">TAKE CONCRETE ACTION</div>
-            <h3 className="text-xl font-black text-slate-900 mb-3">AI Growth Assistant</h3>
-            <p className="text-xs text-slate-600 leading-relaxed mb-6 font-medium">
-              Menjawab <span className="text-indigo-700 font-bold">"Bagaimana langkah konkret mendaftar peluang?"</span> dengan konsul berbasis RAG Knowledge Base.
-            </p>
-            <ul className="space-y-2.5 text-xs text-slate-700 font-medium">
+            <div className="space-y-2">
+              <h3 className="text-xl font-black text-slate-900">3. RAG AI Assistant</h3>
+              <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                Asisten konsultan AI berbasis Retrieval-Augmented Generation (RAG) 24/7 yang menjawab pertanyaan strategis berdasarkan konteks nyata data usaha Anda.
+              </p>
+            </div>
+            <ul className="space-y-2 text-xs text-slate-600 font-medium">
               <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-indigo-500" />
-                <span>Grounded RAG tanpa Halusinasi</span>
+                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                <span>Rekomendasi Grounded dari Data</span>
               </li>
               <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-indigo-500" />
-                <span>Attribusi Dokumen Sumber (Sources)</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-indigo-500" />
-                <span>Pendampingan 24/7 Responsif</span>
+                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                <span>Pendampingan Pembuatan Proposal</span>
               </li>
             </ul>
           </div>
         </div>
       </section>
 
-      {/* Interactive West Java Regional Explorer */}
-      <section id="regions" className="py-20 px-6 max-w-7xl mx-auto border-t border-slate-200/80" aria-label="Interactive West Java Regional Explorer">
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <span className="text-xs font-extrabold uppercase tracking-widest text-sky-600 bg-sky-50 px-3 py-1 rounded-full border border-sky-200">
+      {/* Jabar Growth Hubs */}
+      <section id="regions" className="py-20 px-6 max-w-7xl mx-auto border-t border-slate-200/80 space-y-12">
+        <div className="text-center max-w-3xl mx-auto space-y-3">
+          <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-extrabold uppercase tracking-wider">
             REGIONAL COVERAGE
           </span>
-          <h2 className="text-3xl font-black text-slate-900 mt-3 mb-4 tracking-tight">
-            Jawa Barat SME Regional Hubs
+          <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
+            Jawa Barat Growth Hubs
           </h2>
-          <p className="text-slate-600 text-sm font-medium">
-            Pilih Kabupaten/Kota di Jawa Barat untuk melihat sektor prioritas & program bantuan terintegrasi.
+          <p className="text-slate-600 text-sm md:text-base font-medium">
+            Pilih wilayah untuk melihat fokus sektor unggulan dan kontak Dinas Koperasi & UMKM daerah terkait.
           </p>
         </div>
 
-        {/* Region Tabs */}
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
-          {Object.keys(regionsData).map((r) => (
-            <button
-              key={r}
-              onClick={() => setActiveRegion(r)}
-              className={`px-5 py-2.5 rounded-2xl text-xs font-bold transition-all shadow-xs ${
-                activeRegion === r
-                  ? 'bg-sky-500 text-white shadow-md shadow-sky-500/25 scale-105'
-                  : 'bg-white text-slate-700 border border-slate-200 hover:border-sky-300 hover:bg-sky-50'
-              }`}
-            >
-              📍 {r}
-            </button>
-          ))}
-        </div>
+        <div className="space-y-6">
+          {/* Region Tabs */}
+          <div className="flex items-center justify-center gap-2 flex-wrap">
+            {Object.keys(regionsData).map((region) => (
+              <button
+                key={region}
+                onClick={() => setActiveRegion(region)}
+                className={`px-5 py-2.5 rounded-2xl text-xs font-black transition-all ${
+                  activeRegion === region
+                    ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/25 scale-105'
+                    : 'bg-white text-slate-600 border border-slate-200 hover:border-sky-300'
+                }`}
+              >
+                {region}
+              </button>
+            ))}
+          </div>
 
-        {/* Active Region Detail Card */}
-        {regionsData[activeRegion] && (
-          <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl max-w-4xl mx-auto space-y-6">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-              <div>
-                <span className="text-[10px] font-black uppercase tracking-wider text-sky-600 bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-200">
-                  {regionsData[activeRegion].badge}
+          {/* Region Info Display */}
+          {regionsData[activeRegion] && (
+            <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-lg max-w-4xl mx-auto space-y-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                <div>
+                  <span className="px-3 py-1 rounded-full bg-sky-100 text-sky-700 text-[10px] font-extrabold uppercase tracking-wider">
+                    {regionsData[activeRegion].badge}
+                  </span>
+                  <h3 className="text-2xl font-black text-slate-900 mt-1">{activeRegion} Regional Hub</h3>
+                </div>
+                <span className="text-xs font-bold text-slate-500 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                  {regionsData[activeRegion].contact}
                 </span>
-                <h3 className="text-2xl font-black text-slate-900 mt-1">Fokus Usaha {activeRegion}</h3>
               </div>
-              <span className="text-xs text-slate-500 font-medium hidden sm:inline">{regionsData[activeRegion].contact}</span>
-            </div>
 
-            <div className="space-y-2">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Sektor Prioritas Daerah:</span>
-              <p className="text-sm font-extrabold text-slate-800 bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                {regionsData[activeRegion].sector}
-              </p>
-            </div>
+              <div className="space-y-2">
+                <span className="text-xs font-extrabold uppercase tracking-wider text-slate-400">Sektor Unggulan Daerah</span>
+                <p className="text-sm font-bold text-slate-800 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                  {regionsData[activeRegion].sector}
+                </p>
+              </div>
 
-            <div className="space-y-2">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Program & Bantuan Aktif:</span>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {regionsData[activeRegion].programs.map((p, idx) => (
-                  <div key={idx} className="p-3.5 rounded-xl bg-sky-50 border border-sky-200 text-xs font-bold text-sky-900 flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-sky-500 shrink-0" />
-                    <span>{p}</span>
-                  </div>
-                ))}
+              <div className="space-y-2">
+                <span className="text-xs font-extrabold uppercase tracking-wider text-slate-400">Program Bantuan Daerah Aktif</span>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {regionsData[activeRegion].programs.map((prog, idx) => (
+                    <div key={idx} className="p-3.5 rounded-xl bg-sky-50 border border-sky-100 text-sky-900 font-bold text-xs flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-sky-500 shrink-0" />
+                      <span>{prog}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </section>
-
-      {/* Featured Case Study / SME Growth Showcase */}
-      <section id="preview" className="py-20 px-6 max-w-7xl mx-auto border-t border-slate-200/80" aria-label="SME Growth Showcase Case Study">
-        <div className="bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 rounded-3xl p-8 lg:p-12 text-white shadow-2xl shadow-sky-500/20 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-          <div className="space-y-6">
-            <span className="px-3 py-1 rounded-full bg-white/20 text-white text-xs font-extrabold uppercase tracking-wider">
-              SUCCESS STORY UMKM JABAR
-            </span>
-            <h2 className="text-3xl lg:text-4xl font-black tracking-tight leading-tight">
-              Kopi Karawang Heritage: Dari Usaha Lokal Ke Pasar Ekspor
-            </h2>
-            <p className="text-sky-100 text-sm leading-relaxed font-medium">
-              Dengan mengunggah data transaksi ke Strategiku, Kopi Karawang mendapatkan wawasan bahwa varian Robusta Karawang memiliki margin tertinggi. Platform lalu secara otomatis mencocokkan usaha dengan <strong className="text-white">Program Kurasi Ekspor Disindag Jabar (92% Match)</strong> dan mendampingi proses pendaftaran melalui AI Assistant.
-            </p>
-            <div className="grid grid-cols-2 gap-4 pt-2">
-              <div className="p-4 rounded-2xl bg-white/10 border border-white/20">
-                <div className="text-2xl font-black">+18%</div>
-                <div className="text-xs text-sky-100">Pertumbuhan Omset Bulanan</div>
-              </div>
-              <div className="p-4 rounded-2xl bg-white/10 border border-white/20">
-                <div className="text-2xl font-black">92% Match</div>
-                <div className="text-xs text-sky-100">Kurasi Ekspor Disindag</div>
-              </div>
-            </div>
-            <button
-              onClick={handleDemoLogin}
-              className="px-6 py-3.5 rounded-xl bg-white text-sky-700 font-extrabold text-xs shadow-lg hover:bg-sky-50 transition-all flex items-center gap-2 active:scale-95"
-            >
-              <span>Jelajahi Demo Kopi Karawang</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-          <div className="rounded-2xl p-2 bg-white/20 border border-white/30 overflow-hidden shadow-xl">
-            <img
-              src="/images/umkm_growth.png"
-              alt="West Java SME Coffee Roaster Analyzing Business Growth Metrics with Strategiku Platform"
-              className="w-full h-auto rounded-xl object-cover max-h-[380px]"
-              loading="lazy"
-            />
-          </div>
+          )}
         </div>
       </section>
 
-      {/* Interactive FAQ Accordion Section */}
-      <section id="faq" className="py-20 px-6 max-w-4xl mx-auto border-t border-slate-200/80" aria-label="Frequently Asked Questions">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-100 text-sky-700 text-xs font-bold mb-3 border border-sky-300">
-            <HelpCircle className="w-4 h-4 text-sky-500" />
-            <span>PERTANYAAN UMUM</span>
-          </div>
-          <h2 className="text-3xl font-black text-slate-900 tracking-tight">Frequently Asked Questions</h2>
-          <p className="text-slate-600 text-sm font-medium mt-2">Segala sesuatu yang perlu Anda ketahui tentang Strategiku Platform.</p>
+      {/* FAQ Section */}
+      <section id="faq" className="py-20 px-6 max-w-4xl mx-auto space-y-10 border-t border-slate-200/80">
+        <div className="text-center space-y-3">
+          <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-extrabold uppercase tracking-wider">
+            FREQUENTLY ASKED QUESTIONS
+          </span>
+          <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
+            Pertanyaan Sering Diajukan
+          </h2>
+          <p className="text-slate-600 text-sm font-medium">
+            Segala hal yang perlu Anda ketahui mengenai platform Strategiku.
+          </p>
         </div>
 
         <div className="space-y-4">
-          {faqs.map((faq, index) => (
+          {faqs.map((faq, idx) => (
             <div
-              key={index}
+              key={idx}
               className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs transition-all"
             >
               <button
-                onClick={() => toggleFaq(index)}
-                className="w-full p-5 text-left flex items-center justify-between font-extrabold text-sm text-slate-900 hover:text-sky-600 transition-colors focus:outline-none"
+                onClick={() => toggleFaq(idx)}
+                className="w-full p-5 text-left font-black text-sm text-slate-900 flex items-center justify-between gap-4 hover:bg-slate-50 transition-colors"
               >
                 <span>{faq.q}</span>
-                {openFaq === index ? (
-                  <ChevronUp className="w-5 h-5 text-sky-500 shrink-0 ml-4" />
+                {openFaq === idx ? (
+                  <ChevronUp className="w-4 h-4 text-sky-500 shrink-0" />
                 ) : (
-                  <ChevronDown className="w-5 h-5 text-slate-400 shrink-0 ml-4" />
+                  <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
                 )}
               </button>
-              {openFaq === index && (
+              {openFaq === idx && (
                 <div className="px-5 pb-5 pt-1 text-xs text-slate-600 leading-relaxed font-medium border-t border-slate-100 bg-slate-50/50">
                   {faq.a}
                 </div>
@@ -595,84 +634,114 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Rich Footer with Social Media & Contact */}
-      <footer className="border-t border-slate-200/80 bg-white pt-16 pb-12 px-6" role="contentinfo">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
-          {/* Brand Col */}
-          <div className="space-y-4 md:col-span-1">
-            <div className="flex items-center gap-2.5">
-              <img src="/logo/Logo+Text+Landscape.png" alt="Strategiku Logo" className="h-10 w-auto" />
-            </div>
-            <p className="text-xs text-slate-500 leading-relaxed font-medium">
-              Integrated UMKM Business Growth Intelligence Platform khusus Jawa Barat. Mengubah data transaksi menjadi arah pertumbuhan terukur.
+      {/* CTA Bottom Banner */}
+      <section className="py-16 px-6 max-w-7xl mx-auto">
+        <div className="bg-gradient-to-r from-slate-900 via-sky-950 to-indigo-950 text-white p-10 md:p-14 rounded-3xl shadow-2xl relative overflow-hidden text-center space-y-6">
+          <div className="max-w-2xl mx-auto space-y-3">
+            <span className="px-3 py-1 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-300 text-xs font-extrabold uppercase tracking-wider">
+              READY TO ACCELERATE YOUR UMKM?
+            </span>
+            <h2 className="text-3xl md:text-5xl font-black tracking-tight">
+              Mulai Transformasi Data Usaha Anda Hari Ini
+            </h2>
+            <p className="text-slate-300 text-xs md:text-sm font-medium">
+              Bergabunglah dengan ekosistem UMKM Jawa Barat dan temukan arah pertumbuhan terbaik bagi usaha Anda.
             </p>
-            <div className="flex items-center gap-3 pt-2 text-slate-500">
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-xl bg-slate-100 hover:bg-sky-50 hover:text-sky-600 transition-colors" title="Instagram">
-                <Instagram className="w-4 h-4" />
-              </a>
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-xl bg-slate-100 hover:bg-sky-50 hover:text-sky-600 transition-colors" title="LinkedIn">
-                <Linkedin className="w-4 h-4" />
-              </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-xl bg-slate-100 hover:bg-sky-50 hover:text-sky-600 transition-colors" title="Twitter / X">
-                <Twitter className="w-4 h-4" />
-              </a>
-              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-xl bg-slate-100 hover:bg-sky-50 hover:text-sky-600 transition-colors" title="YouTube">
-                <Youtube className="w-4 h-4" />
-              </a>
-              <a href="https://github.com/Couraa0/Skripsi" target="_blank" rel="noopener noreferrer" className="p-2 rounded-xl bg-slate-100 hover:bg-sky-50 hover:text-sky-600 transition-colors" title="GitHub Repository">
-                <Github className="w-4 h-4" />
-              </a>
-            </div>
           </div>
 
-          {/* Nav Links Col */}
-          <div className="space-y-3">
-            <h3 className="text-xs font-black uppercase tracking-wider text-slate-900">Platform Navigation</h3>
-            <ul className="space-y-2 text-xs font-medium text-slate-600">
-              <li><a href="#concept" className="hover:text-sky-600 transition-colors">Core Journey Flow</a></li>
-              <li><a href="#calculator" className="hover:text-sky-600 transition-colors">Growth Estimator</a></li>
-              <li><a href="#engines" className="hover:text-sky-600 transition-colors">3 Intelligence Engines</a></li>
-              <li><a href="#regions" className="hover:text-sky-600 transition-colors">Jabar Regional Hubs</a></li>
-              <li><a href="#faq" className="hover:text-sky-600 transition-colors">Pertanyaan Umum (FAQ)</a></li>
-            </ul>
-          </div>
-
-          {/* Regional Hubs Col */}
-          <div className="space-y-3">
-            <h3 className="text-xs font-black uppercase tracking-wider text-slate-900">Jawa Barat SME Hubs</h3>
-            <ul className="space-y-2 text-xs font-medium text-slate-600">
-              <li className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-sky-500" /> Kabupaten Karawang (Agro-Kopi)</li>
-              <li className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-sky-500" /> Kota Bandung (Kuliner & Fashion)</li>
-              <li className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-sky-500" /> Kabupaten Bogor (Craft & Manufaktur)</li>
-              <li className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-sky-500" /> Kota Cirebon (Batik & Olahan Laut)</li>
-              <li className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-sky-500" /> Kabupaten Purwakarta (Kuliner Khas)</li>
-            </ul>
-          </div>
-
-          {/* Contact Col */}
-          <div className="space-y-3">
-            <h3 className="text-xs font-black uppercase tracking-wider text-slate-900">Kontak & Dukungan</h3>
-            <ul className="space-y-2 text-xs font-medium text-slate-600">
-              <li className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-sky-500 shrink-0" />
-                <a href="mailto:Muhammadrakhasyamputra@gmail.com" className="hover:text-sky-600 transition-colors">Muhammadrakhasyamputra@gmail.com</a>
-              </li>
-              <li className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-sky-500 shrink-0" />
-                <a href="https://wa.me/6287871310560" target="_blank" rel="noopener noreferrer" className="hover:text-sky-600 transition-colors">+62 878-7131-0560</a>
-              </li>
-              <li className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-sky-500 shrink-0 mt-0.5" />
-                <span>Jl. HS.Ronggo Waluyo, Puseurjaya, Telukjambe Timur, Karawang, Jawa Barat 41361</span>
-              </li>
-            </ul>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+            <Link
+              to="/register"
+              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-sky-500 hover:bg-sky-400 text-white font-extrabold text-sm shadow-xl shadow-sky-500/30 transition-all flex items-center justify-center gap-2 active:scale-95"
+            >
+              <span>Daftar Sekarang Gratis</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <button
+              onClick={handleDemoLogin}
+              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm border border-white/20 transition-all flex items-center justify-center gap-2 active:scale-95"
+            >
+              <span>Coba Demo Account</span>
+            </button>
           </div>
         </div>
+      </section>
 
-        {/* Bottom Copyright Bar */}
-        <div className="max-w-7xl mx-auto pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-medium text-slate-500">
-          <p>© 2026 Strategiku Platform — Integrated UMKM Business Growth Intelligence. All rights reserved.</p>
-          <p className="font-bold text-sky-600">"Dari Data Usaha Menjadi Arah Pertumbuhan"</p>
+      {/* Modern Informative Footer */}
+      <footer className="border-t border-slate-200/80 bg-white relative overflow-hidden">
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-sky-500/50 to-transparent" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-sky-500/5 rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="max-w-7xl mx-auto px-6 pt-16 pb-8 relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8 mb-16">
+            <div className="lg:col-span-2 space-y-6">
+              <img src="/logo/Logo+Text+Landscape.png" alt="Strategiku Logo" className="h-12 w-auto" />
+              <p className="text-slate-500 text-xs md:text-sm max-w-sm leading-relaxed font-medium">
+                Strategiku (Dari Data Usaha Menjadi Arah Pertumbuhan). Next-Gen Business Growth Intelligence Platform khusus untuk UMKM di Jawa Barat, dilengkapi 3 Intelligence Engines modern.
+              </p>
+              <div className="flex items-center gap-4">
+                <a href="#" className="w-10 h-10 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-sky-50 hover:text-sky-500 hover:border-sky-200 transition-all shadow-sm">
+                  <Instagram className="w-4 h-4" />
+                </a>
+                <a href="#" className="w-10 h-10 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-indigo-50 hover:text-indigo-500 hover:border-indigo-200 transition-all shadow-sm">
+                  <Linkedin className="w-4 h-4" />
+                </a>
+                <a href="#" className="w-10 h-10 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-slate-700 hover:border-slate-300 transition-all shadow-sm">
+                  <Twitter className="w-4 h-4" />
+                </a>
+                <a href="#" className="w-10 h-10 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-rose-50 hover:text-rose-500 hover:border-rose-200 transition-all shadow-sm">
+                  <Youtube className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+
+            <div className="space-y-5">
+              <h4 className="text-sm font-black text-slate-900 tracking-wide">Platform</h4>
+              <ul className="space-y-3 text-xs font-semibold text-slate-500">
+                <li><a href="#concept" className="hover:text-sky-600 transition-colors flex items-center gap-1.5"><ArrowRight className="w-3 h-3 text-sky-400" /> Platform Journey</a></li>
+                <li><a href="#engines" className="hover:text-sky-600 transition-colors flex items-center gap-1.5"><ArrowRight className="w-3 h-3 text-sky-400" /> Intelligence Engines</a></li>
+                <li><Link to="/umkm-hub" className="hover:text-sky-600 transition-colors flex items-center gap-1.5"><ArrowRight className="w-3 h-3 text-sky-400" /> UMKM Hub</Link></li>
+                <li><a href="#calculator" className="hover:text-sky-600 transition-colors flex items-center gap-1.5"><ArrowRight className="w-3 h-3 text-sky-400" /> Growth Calculator</a></li>
+              </ul>
+            </div>
+
+            <div className="space-y-5">
+              <h4 className="text-sm font-black text-slate-900 tracking-wide">Dukungan</h4>
+              <ul className="space-y-3 text-xs font-semibold text-slate-500">
+                <li><a href="#regions" className="hover:text-sky-600 transition-colors flex items-center gap-1.5"><ArrowRight className="w-3 h-3 text-sky-400" /> Jabar Regional Hubs</a></li>
+                <li><a href="#faq" className="hover:text-sky-600 transition-colors flex items-center gap-1.5"><ArrowRight className="w-3 h-3 text-sky-400" /> FAQ & Bantuan</a></li>
+                <li><a href="#" className="hover:text-sky-600 transition-colors flex items-center gap-1.5"><ArrowRight className="w-3 h-3 text-sky-400" /> Panduan Pengguna</a></li>
+                <li><a href="#" className="hover:text-sky-600 transition-colors flex items-center gap-1.5"><ArrowRight className="w-3 h-3 text-sky-400" /> Kebijakan Privasi</a></li>
+              </ul>
+            </div>
+
+            <div className="space-y-5">
+              <h4 className="text-sm font-black text-slate-900 tracking-wide">Hubungi Kami</h4>
+              <ul className="space-y-4 text-xs font-medium text-slate-500">
+                <li className="flex items-start gap-3">
+                  <div className="p-1.5 rounded-lg bg-sky-50 text-sky-600 shrink-0"><MapPin className="w-3.5 h-3.5" /></div>
+                  <span className="leading-relaxed">Gedung Sate, Lt. 1<br />Jl. Diponegoro No.22<br />Bandung, Jawa Barat</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 shrink-0"><Phone className="w-3.5 h-3.5" /></div>
+                  <span>+62 811-2233-4455</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <div className="p-1.5 rounded-lg bg-indigo-50 text-indigo-600 shrink-0"><Mail className="w-3.5 h-3.5" /></div>
+                  <span>halo@strategiku.id</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-slate-100 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-[11px] font-bold text-slate-400">© {new Date().getFullYear()} Strategiku. Hak cipta dilindungi undang-undang.</p>
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-bold text-slate-400">Dibuat dengan</span>
+              <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 animate-pulse" />
+              <span className="text-[11px] font-bold text-slate-400">untuk UMKM Jawa Barat</span>
+            </div>
+          </div>
         </div>
       </footer>
     </div>

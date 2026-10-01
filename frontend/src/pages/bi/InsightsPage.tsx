@@ -33,6 +33,8 @@ import {
   UserX,
   Clock,
   Percent,
+  FileText,
+  Building,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -243,6 +245,73 @@ export const InsightsPage: React.FC = () => {
 
   const renderOverviewTab = () => (
     <>
+      {/* Executive Business Summary Banner */}
+      <div className="bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-700 text-white p-6 md:p-7 rounded-3xl border border-sky-400/30 shadow-xl shadow-sky-500/20 relative overflow-hidden space-y-4">
+        {/* Subtle Background Radial Glow */}
+        <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/20 pb-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="px-3 py-0.5 rounded-full bg-white/20 border border-white/30 text-white text-[10px] font-extrabold uppercase tracking-wider">
+                RINGKASAN EKSEKUTIF BISNIS
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-400/90 text-emerald-950 text-[10px] font-black">
+                Kondisi: Sangat Sehat (75.3/100)
+              </span>
+            </div>
+            <h2 className="text-xl md:text-2xl font-black tracking-tight text-white flex items-center gap-2">
+              <Building className="w-6 h-6 text-sky-200 shrink-0" />
+              <span>Kopi Kenangan Karawang</span>
+            </h2>
+            <p className="text-xs text-sky-100 font-medium">
+              Sektor: <strong className="text-white">F&B / Olahan Kopi & Suvenir Kriya</strong> • Domisili: <strong className="text-white">Kabupaten Karawang, Jabar</strong>
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="bg-white/15 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/20 text-right">
+              <span className="text-[10px] text-sky-100 font-bold uppercase block">Status Kemitraan</span>
+              <span className="text-xs font-black text-emerald-300 flex items-center justify-end gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5" /> Terverifikasi Jabar Hub
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Business Narrative & Core Highlights */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          <div className="bg-white/10 p-4 rounded-2xl border border-white/20 space-y-1.5 md:col-span-2 backdrop-blur-xs">
+            <span className="text-sky-200 font-bold text-[11px] uppercase tracking-wider block flex items-center gap-1.5">
+              <FileText className="w-3.5 h-3.5" /> Deskripsi & Model Operasional
+            </span>
+            <p className="text-sky-50 leading-relaxed font-medium">
+              Kopi Kenangan Karawang merupakan usaha UMKM produsen olahan biji kopi arabika specialty single-origin dan paket hampers suvenir lokal. Operasional berfokus pada <strong className="text-white">pasokan grosir B2B (41%)</strong> ke jaringan cafe serta <strong className="text-white">penjualan ritel toko fisik (35%)</strong> dan event pengadaan instansi daerah.
+            </p>
+          </div>
+
+          <div className="bg-white/10 p-4 rounded-2xl border border-white/20 space-y-2 backdrop-blur-xs">
+            <span className="text-amber-300 font-bold text-[11px] uppercase tracking-wider block flex items-center gap-1.5">
+              <Target className="w-3.5 h-3.5" /> Fokus Pertumbuhan Utama
+            </span>
+            <ul className="space-y-1.5 text-sky-50 text-[11px] font-medium">
+              <li className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                <span>Profit Margin: <strong className="text-white">50.2%</strong> (Stabil)</span>
+              </li>
+              <li className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-sky-300 shrink-0" />
+                <span>Mitra Aktif: <strong className="text-white">17 Pelanggan B2B</strong></span>
+              </li>
+              <li className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-300 shrink-0" />
+                <span>Efisiensi: <strong className="text-white">Negosiasi Bahan Baku</strong></span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
       {/* KPI Summary Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard title="Total Revenue" value="Rp 49.2M" change="+18.4% dari periode lalu" positive icon={DollarSign} iconBg="bg-sky-50" iconColor="text-sky-600" sparkData={DAILY_REVENUE_SPARK} />
@@ -596,21 +665,21 @@ export const InsightsPage: React.FC = () => {
   return (
     <AppLayout title="Financial Insights & Analytics" subtitle="Dashboard keuangan profesional untuk memantau performa bisnis secara real-time">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-6 md:p-8 rounded-3xl text-white shadow-2xl relative overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-80 h-80 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="bg-gradient-to-r from-sky-600 via-blue-700 to-indigo-800 p-6 md:p-8 rounded-3xl text-white shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 left-1/4 w-80 h-80 bg-sky-400/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-indigo-400/20 rounded-full blur-3xl pointer-events-none" />
         <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="px-3 py-1 rounded-full bg-sky-500/20 text-sky-300 text-[10px] font-extrabold uppercase tracking-wider border border-sky-500/30">FINANCIAL ANALYTICS ENGINE</span>
-              <span className="text-xs text-slate-400 font-medium">Powered by Strategiku BI</span>
+              <span className="px-3 py-1 rounded-full bg-white/20 text-white text-[10px] font-extrabold uppercase tracking-wider border border-white/30 shadow-sm">FINANCIAL ANALYTICS ENGINE</span>
+              <span className="text-xs text-sky-100 font-medium">Powered by Strategiku BI</span>
             </div>
             <h2 className="text-2xl md:text-3xl font-black tracking-tight">Business Financial Dashboard</h2>
-            <p className="text-xs text-slate-400 mt-1 max-w-xl font-medium leading-relaxed">Analisis komprehensif omset, arus kas, pengeluaran, dan pertumbuhan pelanggan usaha Kopi Karawang Heritage.</p>
+            <p className="text-xs text-sky-100 mt-1 max-w-xl font-medium leading-relaxed">Analisis komprehensif omset, arus kas, pengeluaran, dan pertumbuhan pelanggan usaha Kopi Karawang Heritage.</p>
           </div>
           <div className="flex items-center gap-2">
-            <span className="px-3 py-1.5 rounded-xl bg-slate-700 text-slate-300 text-[11px] font-bold border border-slate-600 flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" />Mei – Okt 2026</span>
-            <Link to="/recommendations" className="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold shadow-lg shadow-sky-500/25 transition-all active:scale-95 flex items-center gap-1.5"><Target className="w-3.5 h-3.5" />Rekomendasi AI</Link>
+            <span className="px-3 py-1.5 rounded-xl bg-white/10 text-white text-[11px] font-bold border border-white/20 flex items-center gap-1.5 backdrop-blur-sm"><Calendar className="w-3.5 h-3.5" />Mei – Okt 2026</span>
+            <Link to="/recommendations" className="px-4 py-2 rounded-xl bg-white text-sky-700 hover:bg-sky-50 hover:text-sky-800 text-xs font-black shadow-lg shadow-black/10 transition-all active:scale-95 flex items-center gap-1.5 border border-sky-100"><Target className="w-3.5 h-3.5 text-sky-500" />Rekomendasi AI</Link>
           </div>
         </div>
       </div>
