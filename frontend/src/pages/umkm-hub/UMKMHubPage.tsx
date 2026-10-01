@@ -1,59 +1,107 @@
-import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useMemo } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   Search,
-  Star,
-  Users,
+  Building,
   MapPin,
-  ChevronRight,
-  Sparkles,
-  Filter,
-  TrendingUp,
-  Folder,
-  DollarSign,
+  Tag,
+  PackageCheck,
+  Calendar,
+  ExternalLink,
+  MessageSquare,
   ChevronDown,
+  Info,
+  Phone,
 } from 'lucide-react';
-import { UMKM_HUB_DATA, UMKMHubItem } from '../../data/umkmHubData';
+import api from '../../lib/api';
+
+export interface OpportunityItem {
+  id?: string;
+  opportunity_id?: string;
+  judul_peluang?: string;
+  title?: string;
+  nama_instansi?: string;
+  organization_name?: string;
+  lokasi?: string;
+  location?: string;
+  kategori?: string;
+  category?: string;
+  jumlah_dan_satuan?: string;
+  quantity_unit?: string;
+  periode?: string;
+  status?: string;
+  link_sumber?: string;
+  source_url?: string;
+  deskripsi?: string;
+  description?: string;
+  persyaratan?: string;
+  telepon?: string;
+  no_wa?: string;
+  phone?: string;
+}
 
 export const UMKMHubPage: React.FC = () => {
   const navigate = useNavigate();
+  const [opportunities, setOpportunities] = useState<OpportunityItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  // Filter States
-  const [selectedRating, setSelectedRating] = useState<string>('Semua Rating');
-  const [selectedSektor, setSelectedSektor] = useState<string>('Semua Sektor');
-  const [selectedKategori, setSelectedKategori] = useState<string>('Semua Kategori');
-  const [selectedKota, setSelectedKota] = useState<string>('Semua Kota');
-  const [selectedOmset, setSelectedOmset] = useState<string>('Semua Omset');
+  // Filters
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedKategori, setSelectedKategori] = useState<string>('Semua Kategori');
+  const [selectedStatus, setSelectedStatus] = useState<string>('Semua Status');
 
-  // Dynamic Unique Filter Options
-  const uniqueSektors = useMemo(() => Array.from(new Set(UMKM_HUB_DATA.map((u) => u.sektor))), []);
-  const uniqueKategoris = useMemo(() => Array.from(new Set(UMKM_HUB_DATA.map((u) => u.kategori))), []);
-  const uniqueKotas = useMemo(() => Array.from(new Set(UMKM_HUB_DATA.map((u) => u.kota))), []);
+  useEffect(() => {
+    const fetchOpportunities = async () => {
+      try {
+        const res: any = await api.get('/opportunities');
+        if (res.success && res.data && res.data.length > 0) {
+          setOpportunities(res.data);
+        } else if (Array.isArray(res) && res.length > 0) {
+          setOpportunities(res);
+        } else {
+          setOpportunities(DEMO_OPPORTUNITIES);
+        }
+      } catch (err) {
+        console.error('Error fetching opportunities:', err);
+        setOpportunities(DEMO_OPPORTUNITIES);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOpportunities();
+  }, []);
 
-  // Filter Logic
-  const filteredData = useMemo(() => {
-    return UMKM_HUB_DATA.filter((item) => {
-      let matchRating = true;
-      if (selectedRating === '4.9+') matchRating = item.rating >= 4.9;
-      if (selectedRating === '4.8+') matchRating = item.rating >= 4.8;
-      if (selectedRating === '5.0') matchRating = item.rating === 5.0;
+  const uniqueKategoris = useMemo(() => {
+    const set = new Set<string>();
+    opportunities.forEach((item) => {
+      const kat = item.kategori || item.category;
+      if (kat) set.add(kat);
+    });
+    return Array.from(set);
+  }, [opportunities]);
 
-      const matchSektor = selectedSektor === 'Semua Sektor' || item.sektor === selectedSektor;
-      const matchKategori = selectedKategori === 'Semua Kategori' || item.kategori === selectedKategori;
-      const matchKota = selectedKota === 'Semua Kota' || item.kota === selectedKota;
-      const matchOmset = selectedOmset === 'Semua Omset' || item.omsetRange === selectedOmset;
+  const filteredOpportunities = useMemo(() => {
+    return opportunities.filter((item) => {
+      const title = item.judul_peluang || item.title || '';
+      const instansi = item.nama_instansi || item.organization_name || '';
+      const lokasi = item.lokasi || item.location || '';
+      const kat = item.kategori || item.category || '';
+      const status = item.status || 'Aktif';
+
       const matchQuery =
         !searchQuery.trim() ||
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.short_description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.team.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.totalRevenue.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()));
+        title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        instansi.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        lokasi.toLowerCase().includes(searchQuery.toLowerCase());
 
-      return matchRating && matchSektor && matchKategori && matchKota && matchOmset && matchQuery;
+      const matchKategori =
+        selectedKategori === 'Semua Kategori' || kat === selectedKategori;
+      const matchStatus =
+        selectedStatus === 'Semua Status' || status === selectedStatus;
+
+      return matchQuery && matchKategori && matchStatus;
     });
-  }, [selectedRating, selectedSektor, selectedKategori, selectedKota, selectedOmset, searchQuery]);
+  }, [opportunities, searchQuery, selectedKategori, selectedStatus]);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-sky-500 selection:text-white">
@@ -72,250 +120,425 @@ export const UMKMHubPage: React.FC = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate('/login')}
-              className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-600 text-xs font-bold border border-slate-200 transition-all"
-            >
-              Masuk Dashboard
-            </button>
-            <button
-              onClick={() => navigate('/register')}
               className="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-extrabold text-xs shadow-md shadow-sky-500/25 transition-all active:scale-95"
             >
-              Daftar Usaha UMKM
+              Masuk Dashboard
             </button>
           </div>
         </div>
       </header>
 
-      {/* Main Container */}
+      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
-        {/* Top Control & Banner (White & Blue Gradient Header) */}
-        <div className="bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-700 p-6 md:p-8 rounded-3xl text-white shadow-xl shadow-sky-500/20 space-y-6 relative overflow-hidden">
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="px-3 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-extrabold uppercase tracking-wider">
-                  KATALOG UMKM SE-JAWA BARAT
-                </span>
-                <span className="text-xs text-sky-100 font-medium">Terbuka untuk Publik & Investor</span>
-              </div>
-              <h1 className="text-2xl md:text-4xl font-black tracking-tight">
-                Direktori Produk, Omset & Performa Finansial UMKM
-              </h1>
-              <p className="text-xs md:text-sm text-sky-100 mt-1 max-w-2xl font-medium leading-relaxed">
-                Temukan profil usaha UMKM Jawa Barat lengkap dengan ulasan rating, indikator omset tahunan, pertumbuhan penjualan, dan kesiapan kemitraan B2B.
-              </p>
+        {/* Banner */}
+        <div className="bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-700 p-6 md:p-8 rounded-3xl text-white shadow-xl shadow-sky-500/20 space-y-6">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="px-3 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-extrabold uppercase tracking-wider">
+                KATALOG USAHA UMKM SE-JAWA BARAT
+              </span>
+              <span className="text-xs text-sky-100 font-medium">Terbuka untuk Publik & UMKM</span>
             </div>
+            <h1 className="text-2xl md:text-4xl font-black tracking-tight">
+              Direktori & Katalog Usaha Kemitraan UMKM Hub
+            </h1>
+            <p className="text-xs md:text-sm text-sky-100 mt-1 max-w-2xl font-medium leading-relaxed">
+              Temukan usaha pengadaan instansi, pasokan B2B, dan kerjasama usaha yang terverifikasi di Jawa Barat.
+            </p>
+          </div>
+        </div>
+
+        {/* Info Banner for adding business */}
+        <div className="bg-sky-50 border border-sky-200 p-4 rounded-2xl flex items-start gap-3 shadow-xs">
+          <Info className="w-5 h-5 text-sky-600 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-xs font-bold text-sky-900">Ingin menambahkan usaha Anda di UMKM Hub?</p>
+            <p className="text-[11px] text-sky-700 font-medium mt-0.5">
+              Daftarkan usaha Anda terlebih dahulu melalui{' '}
+              <button
+                onClick={() => navigate('/login')}
+                className="underline font-bold text-sky-800 hover:text-sky-950 transition-colors"
+              >
+                Dashboard Strategiku
+              </button>
+              , lalu tambahkan informasi usaha Anda ke katalog UMKM Hub.
+            </p>
+          </div>
+        </div>
+
+        {/* Filters & Search */}
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-center gap-3">
+          <div className="relative flex-1 w-full">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Cari judul usaha, instansi, atau lokasi..."
+              className="w-full bg-slate-50 text-slate-800 placeholder-slate-400 text-xs font-bold rounded-xl pl-9 pr-4 py-2.5 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400"
+            />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           </div>
 
-          {/* Styled Custom Filter Dropdowns Grid */}
-          <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-2">
-            {/* 1. Rating Filter Dropdown */}
-            <div className="relative group">
-              <Star className="w-4 h-4 text-amber-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
-              <select
-                value={selectedRating}
-                onChange={(e) => setSelectedRating(e.target.value)}
-                className="w-full bg-white text-slate-800 font-black text-xs pl-10 pr-9 py-3 rounded-2xl border-2 border-white/80 hover:border-sky-300 shadow-md shadow-sky-900/10 focus:outline-none focus:ring-4 focus:ring-sky-300/40 transition-all appearance-none cursor-pointer truncate"
-              >
-                <option value="Semua Rating">Semua Rating ⭐️</option>
-                <option value="4.9+">Rating 4.9+ Stars</option>
-                <option value="4.8+">Rating 4.8+ Stars</option>
-                <option value="5.0">Rating 5.0 (Sempurna)</option>
-              </select>
-              <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
-            </div>
-
-            {/* 2. Sektor Filter Dropdown */}
-            <div className="relative group">
-              <Folder className="w-4 h-4 text-sky-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
-              <select
-                value={selectedSektor}
-                onChange={(e) => setSelectedSektor(e.target.value)}
-                className="w-full bg-white text-slate-800 font-black text-xs pl-10 pr-9 py-3 rounded-2xl border-2 border-white/80 hover:border-sky-300 shadow-md shadow-sky-900/10 focus:outline-none focus:ring-4 focus:ring-sky-300/40 transition-all appearance-none cursor-pointer truncate"
-              >
-                <option value="Semua Sektor">Semua Sektor Industri</option>
-                {uniqueSektors.map((sektor) => (
-                  <option key={sektor} value={sektor}>{sektor}</option>
-                ))}
-              </select>
-              <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
-            </div>
-
-            {/* 3. Kategori Filter Dropdown */}
-            <div className="relative group">
-              <Users className="w-4 h-4 text-indigo-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <div className="relative w-full md:w-48">
               <select
                 value={selectedKategori}
                 onChange={(e) => setSelectedKategori(e.target.value)}
-                className="w-full bg-white text-slate-800 font-black text-xs pl-10 pr-9 py-3 rounded-2xl border-2 border-white/80 hover:border-sky-300 shadow-md shadow-sky-900/10 focus:outline-none focus:ring-4 focus:ring-sky-300/40 transition-all appearance-none cursor-pointer truncate"
+                className="w-full bg-slate-50 text-slate-800 font-bold text-xs pl-3 pr-8 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400 appearance-none cursor-pointer truncate"
               >
-                <option value="Semua Kategori">Semua Kategori Binaan</option>
+                <option value="Semua Kategori">Semua Kategori</option>
                 {uniqueKategoris.map((kat) => (
-                  <option key={kat} value={kat}>{kat}</option>
+                  <option key={kat} value={kat}>
+                    {kat}
+                  </option>
                 ))}
               </select>
-              <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
+              <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
 
-            {/* 4. Kota Filter Dropdown */}
-            <div className="relative group">
-              <MapPin className="w-4 h-4 text-rose-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
+            <div className="relative w-full md:w-40">
               <select
-                value={selectedKota}
-                onChange={(e) => setSelectedKota(e.target.value)}
-                className="w-full bg-white text-slate-800 font-black text-xs pl-10 pr-9 py-3 rounded-2xl border-2 border-white/80 hover:border-sky-300 shadow-md shadow-sky-900/10 focus:outline-none focus:ring-4 focus:ring-sky-300/40 transition-all appearance-none cursor-pointer truncate"
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="w-full bg-slate-50 text-slate-800 font-bold text-xs pl-3 pr-8 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400 appearance-none cursor-pointer truncate"
               >
-                <option value="Semua Kota">Semua Kota / Wilayah</option>
-                {uniqueKotas.map((kota) => (
-                  <option key={kota} value={kota}>{kota}</option>
-                ))}
+                <option value="Semua Status">Semua Status</option>
+                <option value="Aktif">Aktif</option>
+                <option value="Terbuka">Terbuka</option>
+                <option value="Proses Seleksi">Proses Seleksi</option>
+                <option value="Ditutup">Ditutup</option>
               </select>
-              <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
-            </div>
-
-            {/* 5. Financial / Omset Range Dropdown (Replaces Problem Statement!) */}
-            <div className="relative group">
-              <DollarSign className="w-4 h-4 text-emerald-600 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
-              <select
-                value={selectedOmset}
-                onChange={(e) => setSelectedOmset(e.target.value)}
-                className="w-full bg-white text-slate-800 font-black text-xs pl-10 pr-9 py-3 rounded-2xl border-2 border-white/80 hover:border-sky-300 shadow-md shadow-sky-900/10 focus:outline-none focus:ring-4 focus:ring-sky-300/40 transition-all appearance-none cursor-pointer truncate"
-              >
-                <option value="Semua Omset">Semua Skala Omset</option>
-                <option value="100 - 500 Juta">Rp 100M - 500M / thn</option>
-                <option value="500 Juta - 1 Miliar">Rp 500M - 1 Miliar / thn</option>
-                <option value="> 1 Miliar">&gt; Rp 1 Miliar / thn</option>
-              </select>
-              <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
-            </div>
-          </div>
-
-          {/* Search Input Box */}
-          <div className="relative z-10 pt-1">
-            <div className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Cari berdasarkan nama usaha, produk, kota, omset, atau kata kunci..."
-                className="w-full bg-white text-slate-900 placeholder-slate-400 text-xs md:text-sm font-bold rounded-2xl pl-5 pr-12 py-3.5 shadow-xl border-2 border-white/80 focus:outline-none focus:ring-4 focus:ring-sky-300/50"
-              />
-              <Search className="w-5 h-5 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
         </div>
 
-        {/* Dynamic Count Banner */}
-        <div className="flex items-center justify-between px-2">
-          <p className="text-sm font-bold text-slate-700">
-            Menampilkan <span className="text-sky-600 font-black text-base">{filteredData.length}</span> usaha UMKM terverifikasi
-          </p>
-          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
-            <Sparkles className="w-4 h-4 text-amber-500" />
-            <span>Terintegrasi Financial BI Jawa Barat</span>
+        {/* UMKM Hub Cards 2x2 Grid */}
+        {loading ? (
+          <div className="p-12 text-center text-slate-400 font-mono text-xs">
+            Memuat data usaha UMKM Hub...
           </div>
-        </div>
-
-        {/* UMKM Cards Grid (No Problem Statement, Featuring Financial Metrics!) */}
-        {filteredData.length === 0 ? (
-          <div className="bg-white rounded-3xl p-12 text-center space-y-3 border border-slate-200 shadow-sm">
-            <Filter className="w-10 h-10 text-slate-300 mx-auto" />
-            <h3 className="text-base font-extrabold text-slate-800">Tidak ada UMKM yang cocok</h3>
-            <p className="text-xs text-slate-500 max-w-md mx-auto">
-              Coba sesuaikan kata kunci pencarian atau ubah filter di bagian atas.
-            </p>
+        ) : filteredOpportunities.length === 0 ? (
+          <div className="p-12 text-center text-slate-500 font-bold text-xs bg-white rounded-3xl border border-slate-200">
+            Tidak ada usaha yang cocok dengan filter Anda.
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredData.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => navigate(`/umkm-hub/${item.id}`)}
-                className="bg-white hover:bg-sky-50/40 border border-slate-200 hover:border-sky-400/80 rounded-3xl p-6 text-slate-900 flex flex-col justify-between shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group relative"
-              >
-                <div className="space-y-4">
-                  {/* Top Badges (Sektor & Star Rating) */}
-                  <div className="flex items-center justify-between gap-1 flex-wrap">
-                    <span className="px-3 py-1 rounded-full bg-sky-100 border border-sky-300 text-[10px] font-black text-sky-700 truncate max-w-[160px]">
-                      {item.sektor}
-                    </span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {filteredOpportunities.map((oppItem: any) => {
+              const id = oppItem.id || oppItem.opportunity_id || 'opp_demo';
+              const title = oppItem.judul_peluang || oppItem.title || 'Judul Usaha';
+              const instansi = oppItem.nama_instansi || oppItem.organization_name || 'Nama Instansi/Pihak';
+              const lokasi = oppItem.lokasi || oppItem.location || 'Lokasi';
+              const kategori = oppItem.kategori || oppItem.category || 'Kategori';
+              const jumlahSatuan = oppItem.jumlah_dan_satuan || oppItem.quantity_unit || '100 Pcs';
+              const periode = oppItem.periode || '2026';
+              const status = oppItem.status || 'Aktif';
+              const linkSumber = oppItem.link_sumber || oppItem.source_url || '#';
+              const phone = oppItem.telepon || oppItem.no_wa || oppItem.phone || '6281234567890';
+              const cleanPhone = phone.replace(/[^0-9]/g, '');
 
-                    <span className="px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-[10px] font-black text-amber-700 flex items-center gap-1 shadow-2xs">
-                      <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
-                      <span>{item.rating}</span>
-                      <span className="text-slate-400 font-normal">({item.reviewCount})</span>
-                    </span>
-                  </div>
+              const waMessage = encodeURIComponent(
+                `Halo ${instansi}, saya tertarik dengan usaha "${title}" yang terdaftar di UMKM Hub Strategiku. Saya ingin berkonsultasi / mengajukan penawaran kerjasama.`
+              );
+              const waUrl = `https://wa.me/${cleanPhone}?text=${waMessage}`;
 
-                  {/* Avatar & Code */}
-                  <div className="flex items-center gap-3 pt-1">
-                    <div className="w-10 h-10 rounded-2xl bg-sky-500 text-white flex items-center justify-center font-black text-sm shadow-md shrink-0">
-                      {item.avatar}
-                    </div>
-                    <div>
-                      <span className="text-[11px] font-mono font-bold text-slate-400 block">
-                        {item.code}
-                      </span>
-                      <span className="text-xs font-bold text-sky-600">
-                        📍 {item.kota}, {item.provinsi}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Title & Description */}
-                  <div className="space-y-1.5">
-                    <h3 className="text-xl font-black text-slate-900 group-hover:text-sky-600 transition-colors leading-tight">
-                      {item.title}
-                    </h3>
-                    <p className="text-xs text-slate-600 leading-relaxed font-medium line-clamp-3">
-                      {item.short_description}
-                    </p>
-                  </div>
-
-                  {/* Financial & Revenue Highlights Badge (Replaces Problem Statement!) */}
-                  <div className="p-3 rounded-2xl bg-emerald-50/80 border border-emerald-200 flex items-center justify-between text-xs">
-                    <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block">
-                        TOTAL REVENUE (OMSET)
-                      </span>
-                      <span className="font-black text-slate-900 text-xs">
-                        {item.totalRevenue}
-                      </span>
-                    </div>
-                    <div className="text-right">
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-200/80 text-[10px] font-black text-emerald-800 flex items-center gap-0.5">
-                        <TrendingUp className="w-3 h-3 text-emerald-700" />
-                        <span>{item.growthRate}</span>
-                      </span>
-                    </div>
-                  </div>
-
+              return (
+                <div
+                  key={id}
+                  className="group border border-slate-200 bg-white p-5 space-y-3.5 shadow-sm hover:shadow-lg hover:border-sky-200 transition-all duration-300 rounded-2xl flex flex-col justify-between h-full"
+                >
                   {/* Tags */}
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {item.tags.slice(0, 3).map((tag, idx) => (
-                      <span
-                        key={idx}
-                        className="px-2.5 py-1 rounded-lg bg-sky-50 border border-sky-200 text-[10px] font-bold text-sky-700"
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="px-2 py-0.5 rounded-md bg-sky-50 border border-sky-200 text-sky-700 text-[10px] font-extrabold uppercase tracking-wide flex items-center gap-1">
+                      <Tag className="w-3 h-3" />
+                      {kategori}
+                    </span>
+                    <span
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase border ${
+                        status === 'Aktif' || status === 'Terbuka'
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                          : 'bg-amber-50 text-amber-700 border-amber-200'
+                      }`}
+                    >
+                      {status}
+                    </span>
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-base font-black text-slate-900 leading-snug line-clamp-2 group-hover:text-sky-700 transition-colors">
+                    {title}
+                  </h3>
+
+                  {/* Info Row */}
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-semibold text-slate-500">
+                    <span className="flex items-center gap-1 text-slate-600">
+                      <Building className="w-3.5 h-3.5 text-sky-500 shrink-0" />
+                      <span className="truncate max-w-[180px]">{instansi}</span>
+                    </span>
+                    <span className="text-slate-300">|</span>
+                    <span className="flex items-center gap-1 text-slate-600">
+                      <MapPin className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                      {lokasi}
+                    </span>
+                  </div>
+
+                  {/* Details */}
+                  <div className="grid grid-cols-2 gap-2.5 bg-slate-50/80 p-3 rounded-xl border border-slate-100">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-lg bg-white text-sky-600 flex items-center justify-center border border-slate-200 shrink-0">
+                        <PackageCheck className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="min-w-0">
+                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Jumlah</span>
+                        <span className="text-[11px] font-black text-slate-800 truncate block">{jumlahSatuan}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-lg bg-white text-indigo-600 flex items-center justify-center border border-slate-200 shrink-0">
+                        <Calendar className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="min-w-0">
+                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Periode</span>
+                        <span className="text-[11px] font-black text-slate-800 truncate block">{periode}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Footer */}
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                    <a
+                      href={linkSumber}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[11px] font-bold text-sky-500 hover:text-sky-700 hover:underline truncate max-w-[35%]"
+                    >
+                      <ExternalLink className="w-3 h-3 shrink-0" />
+                      <span className="truncate">Sumber</span>
+                    </a>
+
+                    <div className="flex items-center gap-2">
+                      <Link
+                        to={`/umkm-hub/${id}`}
+                        className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold border border-slate-200 transition-all"
                       >
-                        {tag}
-                      </span>
-                    ))}
+                        Detail
+                      </Link>
+                      <a
+                        href={waUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-[11px] shadow-md shadow-emerald-500/20 transition-all active:scale-95 flex items-center gap-1"
+                      >
+                        <MessageSquare className="w-3 h-3" />
+                        Ajukan (WA)
+                      </a>
+                    </div>
                   </div>
                 </div>
-
-                {/* Card Footer */}
-                <div className="pt-5 mt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                  <span className="font-bold text-slate-700 truncate">{item.company}</span>
-                  <span className="text-sky-600 font-extrabold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                    <span>Detail Usaha</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </main>
     </div>
   );
 };
+
+const DEMO_OPPORTUNITIES: OpportunityItem[] = [
+  {
+    id: 'opp_001',
+    judul_peluang: 'Pengadaan Bingkisan Kopi & Suvenir UMKM Pemkab Karawang',
+    nama_instansi: 'Dinas Koperasi & UMKM Kabupaten Karawang',
+    lokasi: 'Kabupaten Karawang',
+    kategori: 'F&B / Pengadaan',
+    jumlah_dan_satuan: '500 Box Suvenir',
+    periode: '1 Oktober - 15 November 2026',
+    status: 'Aktif',
+    telepon: '6281234567890',
+    link_sumber: 'https://diskopukm.karawangkab.go.id/peluang-pengadaan-2026',
+    deskripsi: 'Pengadaan paket suvenir kopi lokal Karawang untuk perayaan HUT Karawang dan event kunjungan kerja dinas.',
+    persyaratan: 'Legalitas NIB & Halal terverifikasi',
+  },
+  {
+    id: 'opp_002',
+    judul_peluang: 'Pasokan Biji Kopi Roasting untuk Jaringan Cafe Bandung',
+    nama_instansi: 'Kolektif Cafe Bandung Raya',
+    lokasi: 'Kota Bandung',
+    kategori: 'F&B / Supply Agreement',
+    jumlah_dan_satuan: '250 kg / bulan',
+    periode: 'November 2026 - April 2027 (6 Bulan)',
+    status: 'Aktif',
+    telepon: '6285712345678',
+    link_sumber: 'https://bandungcafenetwork.com/supply-partner-2026',
+    deskripsi: 'Pasokan biji kopi roasted bean untuk cafe di Bandung.',
+  },
+  {
+    id: 'opp_003',
+    judul_peluang: 'Display Ritel Produk Suvenir Kopi Rest Area Tol Cipularang',
+    nama_instansi: 'Pengelola Rest Area KM 88 Purbaleunyi',
+    lokasi: 'Kabupaten Purwakarta',
+    kategori: 'Retail / Etalase Suvenir',
+    jumlah_dan_satuan: '150 Box / bulan',
+    periode: '1 Oktober 2026 - 31 Maret 2027',
+    status: 'Aktif',
+    telepon: '6281987654321',
+    link_sumber: 'https://jasamarga.co.id/pojok-umkm-restarea',
+    deskripsi: 'Display retail suvenir kopi lokal di Rest Area Tol.',
+  },
+  {
+    id: 'opp_004',
+    judul_peluang: 'Program Kurasi Ekspor Fashion & Batik Tulis Jawa Barat',
+    nama_instansi: 'Dinas Perindustrian & Perdagangan Jabar',
+    lokasi: 'Kota Cirebon',
+    kategori: 'Fesyen & Kriya',
+    jumlah_dan_satuan: '300 Pcs Kain Batik',
+    periode: 'Oktober 2026 - Februari 2027',
+    status: 'Terbuka',
+    telepon: '6282111223344',
+    link_sumber: 'https://disindag.jabarprov.go.id/kurasi-ekspor-batik',
+    deskripsi: 'Fasilitasi kurasi produk fashion batik dan kriya Nusantara untuk pasar ekspor ke Jepang & Singapura.',
+  },
+  {
+    id: 'opp_005',
+    judul_peluang: 'Kemitraan Pasokan Snack & Keripik Pedas Minimarket Berjejaring',
+    nama_instansi: 'PT Retail Pasundan Modern',
+    lokasi: 'Kota Bekasi',
+    kategori: 'F&B / Supply Agreement',
+    jumlah_dan_satuan: '2.000 Pouch / bulan',
+    periode: '1 November 2026 - 31 Oktober 2027',
+    status: 'Aktif',
+    telepon: '6281344556677',
+    link_sumber: 'https://pasundanretail.co.id/vendor-snack',
+    deskripsi: 'Penempatan produk camilan keripik pedas olahan lokal pada 120 jaringan minimarket di Jabodetabek.',
+  },
+  {
+    id: 'opp_006',
+    judul_peluang: 'Pasokan Teh Hijau & Herbal Organik Hotel Bintang 5 Bogor',
+    nama_instansi: 'Puncak Resort & Convention Hotel',
+    lokasi: 'Kabupaten Bogor',
+    kategori: 'F&B / Pengadaan',
+    jumlah_dan_satuan: '400 Pouch Artisan',
+    periode: 'Desember 2026 - Mei 2027',
+    status: 'Terbuka',
+    telepon: '6285299887766',
+    link_sumber: 'https://puncakresorthotel.com/vendor-tea',
+    deskripsi: 'Pengadaan teh hijau dan olahan herbal organik petik pucuk untuk welcome drink guest hotel.',
+  },
+  {
+    id: 'opp_007',
+    judul_peluang: 'Etalase Produk Kriya & Anyaman Pandan Festival Sukabumi',
+    nama_instansi: 'Pemerintah Kota Sukabumi',
+    lokasi: 'Kota Sukabumi',
+    kategori: 'Fesyen & Kriya',
+    jumlah_dan_satuan: '500 Pcs Craft',
+    periode: '15 November - 20 Desember 2026',
+    status: 'Proses Seleksi',
+    telepon: '6287812345678',
+    link_sumber: 'https://sukabumikab.go.id/event-kriya-2026',
+    deskripsi: 'Penyediaan booth etalase dan souvenir anyaman pandan alami untuk tamu mancanegara.',
+  },
+  {
+    id: 'opp_008',
+    judul_peluang: 'Pengadaan Goodie Bag & Souvenir Seminar Nasional ITB',
+    nama_instansi: 'Koperasi Sivitas Akademika ITB',
+    lokasi: 'Kota Bandung',
+    kategori: 'Retail / Etalase Suvenir',
+    jumlah_dan_satuan: '800 Pack Souvenir',
+    periode: '10 November - 25 November 2026',
+    status: 'Aktif',
+    telepon: '6281298765432',
+    link_sumber: 'https://koperasi.itb.ac.id/pengadaan-goodiebag',
+    deskripsi: 'Pengadaan souvenir unik olahan lokal (drip coffee, mug kriya, notebook ramah lingkungan).',
+  },
+  {
+    id: 'opp_009',
+    judul_peluang: 'Supply Olahan Hasil Laut & Kerupuk Ikan Ekspor ASEAN',
+    nama_instansi: 'PT Bahari Pasundan Export',
+    lokasi: 'Kabupaten Indramayu',
+    kategori: 'F&B / Supply Agreement',
+    jumlah_dan_satuan: '5 Ton / bulan',
+    periode: '1 Januari 2027 - 31 Desember 2027',
+    status: 'Terbuka',
+    telepon: '6285678901234',
+    link_sumber: 'https://baharipasundan.co.id/supplier-seafood',
+    deskripsi: 'Kemitraan pasokan bahan olahan laut dan kerupuk ikan kualitas ekspor tujuan Malaysia dan Thailand.',
+  },
+  {
+    id: 'opp_010',
+    judul_peluang: 'Program Pendampingan Sertifikasi Halal Gratis (SEHATI) Jabar',
+    nama_instansi: 'BPJPH & Satgas Halal Jawa Barat',
+    lokasi: 'Kota Bandung',
+    kategori: 'Jasa & Teknologi',
+    jumlah_dan_satuan: '1.000 Kuota UMKM',
+    periode: 'Oktober 2026 - Desember 2026',
+    status: 'Aktif',
+    telepon: '6283812345678',
+    link_sumber: 'https://halal.jabarprov.go.id/sehati-2026',
+    deskripsi: 'Program pendampingan proses produk halal (PPH) gratis tanpa biaya untuk UMKM makanan minuman.',
+  },
+  {
+    id: 'opp_011',
+    judul_peluang: 'Pasokan Beras Organik & Rempah Olahan Restoran Garut',
+    nama_instansi: 'Kolektif Restoran Heritage Garut',
+    lokasi: 'Kabupaten Garut',
+    kategori: 'Agro & Perkebunan',
+    jumlah_dan_satuan: '1.5 Ton / bulan',
+    periode: 'November 2026 - Oktober 2027',
+    status: 'Aktif',
+    telepon: '6289612345678',
+    link_sumber: 'https://garutkuliner.id/pasokan-organik',
+    deskripsi: 'Kemitraan pasokan beras organik lokal dan bumbu rempah mentah olahan untuk jaringan rumah makan.',
+  },
+  {
+    id: 'opp_012',
+    judul_peluang: 'Kemitraan Kerajinan Sepatu & Tas Kulit Cibaduyut Custom',
+    nama_instansi: 'Koperasi Pengrajin Kulit Bandung',
+    lokasi: 'Kota Bandung',
+    kategori: 'Fesyen & Kriya',
+    jumlah_dan_satuan: '600 Pasang / bulan',
+    periode: '1 Desember 2026 - 30 November 2027',
+    status: 'Terbuka',
+    telepon: '6281223344556',
+    link_sumber: 'https://cibaduyutleather.com/b2b-order',
+    deskripsi: 'Pemesanan sepatu dan produk alas kaki berbahan kulit sapi garut asli dengan konstruksi Goodyear Welted.',
+  },
+  {
+    id: 'opp_013',
+    judul_peluang: 'Fasilitasi PIRT & Lab Uji Nutrisi Makanan Kemasan Tasikmalaya',
+    nama_instansi: 'Dinas Kesehatan Kab. Tasikmalaya',
+    lokasi: 'Kabupaten Tasikmalaya',
+    kategori: 'Jasa & Teknologi',
+    jumlah_dan_satuan: '200 Produk UMKM',
+    periode: 'Oktober 2026 - November 2026',
+    status: 'Aktif',
+    telepon: '6285776655443',
+    link_sumber: 'https://dinkes.tasikmalayakab.go.id/uji-pirt',
+    deskripsi: 'Bantuan pengujian kadar nutrisi laboratorium dan sertifikasi izin edar P-IRT gratis.',
+  },
+  {
+    id: 'opp_014',
+    judul_peluang: 'Pengadaan Seragam Batik & Gift Box Instansi Pemerintah Cimahi',
+    nama_instansi: 'Sekretariat Daerah Kota Cimahi',
+    lokasi: 'Kota Cimahi',
+    kategori: 'Fesyen & Kriya',
+    jumlah_dan_satuan: '450 Set Seragam',
+    periode: '15 Oktober - 30 November 2026',
+    status: 'Proses Seleksi',
+    telepon: '6281809876543',
+    link_sumber: 'https://cimahikota.go.id/pengadaan-batik-2026',
+    deskripsi: 'Pengadaan baju batik motif khas Cimahi untuk perlengkapan seragam pegawai dan hampers tamu.',
+  },
+  {
+    id: 'opp_015',
+    judul_peluang: 'Display Booth UMKM Inovasi Digital & Startup Kreatif Depok',
+    nama_instansi: 'Depok Creative Economy Hub',
+    lokasi: 'Kota Depok',
+    kategori: 'Jasa & Teknologi',
+    jumlah_dan_satuan: '50 Stand Booth',
+    periode: '10 Desember - 15 Desember 2026',
+    status: 'Terbuka',
+    telepon: '6282299001122',
+    link_sumber: 'https://depokcreative.id/expo-2026',
+    deskripsi: 'Penyediaan booth etalase gratis untuk UMKM bidang produk inovasi digital dan aplikasi kreatif.',
+  },
+];

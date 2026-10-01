@@ -1,72 +1,40 @@
 -- ============================================================================
--- APH YAH Platform - Supabase PostgreSQL Database Schema
--- Integrated UMKM Business Growth Intelligence Platform (West Java)
+-- STRATEGIKU PLATFORM - FINAL SUPABASE POSTGRESQL DATABASE SCHEMA
+-- Clean Drop, Full Table Creation, RLS Policies & Complete Seed Data
 -- ============================================================================
 
--- Enable required extensions
+-- ----------------------------------------------------------------------------
+-- 1. CLEANUP EXISTING DATABASE OBJECTS (EXECUTE RESET)
+-- ----------------------------------------------------------------------------
+DROP TABLE IF EXISTS umkm_recommendations CASCADE;
+DROP TABLE IF EXISTS umkm_hub_opportunities CASCADE;
+DROP TABLE IF EXISTS business_transactions CASCADE;
+DROP TABLE IF EXISTS business_insights CASCADE;
+DROP TABLE IF EXISTS business_products CASCADE;
+DROP TABLE IF EXISTS business_profiles CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
+DROP TYPE IF EXISTS "UserRole" CASCADE;
+DROP TYPE IF EXISTS "OpportunityStatus" CASCADE;
+DROP TYPE IF EXISTS "YesNoSyarat" CASCADE;
+
+-- ----------------------------------------------------------------------------
+-- 2. ENABLE REQUIRED EXTENSIONS
+-- ----------------------------------------------------------------------------
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- Clean up existing tables (Optional - run with caution)
--- DROP TABLE IF EXISTS knowledge_chunks CASCADE;
--- DROP TABLE IF EXISTS knowledge_documents CASCADE;
--- DROP TABLE IF EXISTS recommendations CASCADE;
--- DROP TABLE IF EXISTS opportunity_requirements CASCADE;
--- DROP TABLE IF EXISTS opportunities CASCADE;
--- DROP TABLE IF EXISTS business_insights CASCADE;
--- DROP TABLE IF EXISTS transaction_items CASCADE;
--- DROP TABLE IF EXISTS transactions CASCADE;
--- DROP TABLE IF EXISTS customers CASCADE;
--- DROP TABLE IF EXISTS products CASCADE;
--- DROP TABLE IF EXISTS business_capabilities CASCADE;
--- DROP TABLE IF EXISTS business_goals CASCADE;
--- DROP TABLE IF EXISTS business_profiles CASCADE;
--- DROP TABLE IF EXISTS business_users CASCADE;
--- DROP TABLE IF EXISTS businesses CASCADE;
--- DROP TABLE IF EXISTS users CASCADE;
--- DROP TABLE IF EXISTS regional_contexts CASCADE;
-
--- Create Enums
-DO $$ BEGIN
-    CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'UMKM_OWNER', 'STAFF');
-EXCEPTION WHEN duplicate_object THEN null; END $$;
-
-DO $$ BEGIN
-    CREATE TYPE "BusinessCategory" AS ENUM ('KULINER', 'FASHION', 'KERAJINAN', 'PERDAGANGAN', 'JASA', 'MANUFAKTUR', 'AGROBISNIS', 'LAINNYA');
-EXCEPTION WHEN duplicate_object THEN null; END $$;
-
-DO $$ BEGIN
-    CREATE TYPE "ScaleStage" AS ENUM ('MICRO', 'SMALL', 'MEDIUM');
-EXCEPTION WHEN duplicate_object THEN null; END $$;
-
-DO $$ BEGIN
-    CREATE TYPE "TransactionStatus" AS ENUM ('COMPLETED', 'PENDING', 'CANCELLED');
-EXCEPTION WHEN duplicate_object THEN null; END $$;
-
-DO $$ BEGIN
-    CREATE TYPE "InsightCategory" AS ENUM ('REVENUE', 'PRODUCT', 'CUSTOMER', 'EFFICIENCY', 'MARKET');
-EXCEPTION WHEN duplicate_object THEN null; END $$;
-
-DO $$ BEGIN
-    CREATE TYPE "InsightImpact" AS ENUM ('HIGH', 'MEDIUM', 'LOW');
-EXCEPTION WHEN duplicate_object THEN null; END $$;
-
-DO $$ BEGIN
-    CREATE TYPE "OpportunityCategory" AS ENUM ('EXHIBITION', 'FINANCING', 'DISTRIBUTION', 'TRAINING', 'DIGITALIZATION');
-EXCEPTION WHEN duplicate_object THEN null; END $$;
-
-DO $$ BEGIN
-    CREATE TYPE "DocCategory" AS ENUM ('SOP', 'FINANCIAL', 'MARKETING', 'REGULATION', 'MARKET_RESEARCH', 'GENERAL');
-EXCEPTION WHEN duplicate_object THEN null; END $$;
-
-DO $$ BEGIN
-    CREATE TYPE "SenderType" AS ENUM ('USER', 'ASSISTANT');
-EXCEPTION WHEN duplicate_object THEN null; END $$;
+-- ----------------------------------------------------------------------------
+-- 3. ENUM DEFINITIONS
+-- ----------------------------------------------------------------------------
+CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'UMKM_OWNER');
+CREATE TYPE "OpportunityStatus" AS ENUM ('Aktif', 'Terbuka', 'Ditutup', 'Proses Seleksi');
+CREATE TYPE "YesNoSyarat" AS ENUM ('Ya', 'Tidak', 'Dengan Syarat');
 
 -- ----------------------------------------------------------------------------
--- 1. Users & Auth
+-- 4. USERS TABLE (Auth & Multi-Role Access)
 -- ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE users (
     id VARCHAR(36) PRIMARY KEY DEFAULT uuid_generate_v4()::text,
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
@@ -79,362 +47,273 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- ----------------------------------------------------------------------------
--- 2. Businesses
+-- 5. BUSINESS PROFILES TABLE (5 Main Sections of UMKM Business Profile)
 -- ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS businesses (
-    id VARCHAR(36) PRIMARY KEY DEFAULT uuid_generate_v4()::text,
-    name VARCHAR(255) NOT NULL,
-    category "BusinessCategory" NOT NULL DEFAULT 'KULINER',
-    city VARCHAR(100) NOT NULL DEFAULT 'Bandung',
-    province VARCHAR(100) NOT NULL DEFAULT 'Jawa Barat',
-    description TEXT,
-    address TEXT,
-    phone VARCHAR(50),
-    email VARCHAR(255),
-    website VARCHAR(255),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS business_users (
+CREATE TABLE business_profiles (
     id VARCHAR(36) PRIMARY KEY DEFAULT uuid_generate_v4()::text,
     user_id VARCHAR(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    business_id VARCHAR(36) NOT NULL REFERENCES businesses(id) ON DELETE CASCADE,
-    role "UserRole" NOT NULL DEFAULT 'UMKM_OWNER',
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(user_id, business_id)
-);
-
--- ----------------------------------------------------------------------------
--- 3. Business Profiles & Capability Engine
--- ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS business_profiles (
-    id VARCHAR(36) PRIMARY KEY DEFAULT uuid_generate_v4()::text,
-    business_id VARCHAR(36) UNIQUE NOT NULL REFERENCES businesses(id) ON DELETE CASCADE,
-    scale_stage "ScaleStage" NOT NULL DEFAULT 'MICRO',
-    monthly_revenue DOUBLE PRECISION NOT NULL DEFAULT 0,
-    employee_count INT NOT NULL DEFAULT 1,
-    operational_years INT NOT NULL DEFAULT 1,
-    readiness_score INT NOT NULL DEFAULT 65,
-    digital_adoption_score INT NOT NULL DEFAULT 50,
-    financial_health_score INT NOT NULL DEFAULT 60,
+    
+    -- 1. Identitas UMKM
+    nama_usaha VARCHAR(255) NOT NULL,
+    nama_pemilik VARCHAR(255) NOT NULL,
+    kabupaten_kota VARCHAR(100) NOT NULL,
+    alamat_usaha TEXT NOT NULL,
+    tahun_mulai_usaha INT NOT NULL DEFAULT 2020,
+    deskripsi_usaha TEXT NOT NULL,
+    
+    -- 2. Kategori dan Kemampuan Usaha
+    bidang_usaha VARCHAR(100) NOT NULL,
+    kategori VARCHAR(100) NOT NULL,
+    target_pasar VARCHAR(255) NOT NULL,
+    kapasitas VARCHAR(100) NOT NULL,
+    area_layanan VARCHAR(255) NOT NULL,
+    
+    -- 3. Pengalaman dan Kesiapan Kemitraan
+    pengalaman_b2b TEXT,
+    pengalaman_pesanan_besar TEXT,
+    legalitas_usaha TEXT, -- NIB, PIRT, Halal, PT/CV, HKI
+    kesediaan_memenuhi_pesanan_besar "YesNoSyarat" NOT NULL DEFAULT 'Ya',
+    persyaratan_kemampuan_khusus TEXT,
+    
+    -- 4. Preferensi Kemitraan
+    jenis_peluang_diminati TEXT NOT NULL,
+    wilayah_peluang_diinginkan TEXT NOT NULL,
+    minimal_pesanan VARCHAR(100) NOT NULL,
+    maksimal_pesanan VARCHAR(100) NOT NULL,
+    deskripsi_kerjasama TEXT NOT NULL,
+    
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS business_goals (
+-- ----------------------------------------------------------------------------
+-- 6. BUSINESS PRODUCTS TABLE (Section 5: Katalog Produk/Jasa)
+-- ----------------------------------------------------------------------------
+CREATE TABLE business_products (
     id VARCHAR(36) PRIMARY KEY DEFAULT uuid_generate_v4()::text,
     profile_id VARCHAR(36) NOT NULL REFERENCES business_profiles(id) ON DELETE CASCADE,
-    goal_type VARCHAR(100) NOT NULL,
-    target_value DOUBLE PRECISION,
-    target_date TIMESTAMP WITH TIME ZONE,
-    is_achieved BOOLEAN NOT NULL DEFAULT false,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS business_capabilities (
-    id VARCHAR(36) PRIMARY KEY DEFAULT uuid_generate_v4()::text,
-    profile_id VARCHAR(36) NOT NULL REFERENCES business_profiles(id) ON DELETE CASCADE,
-    capability_name VARCHAR(100) NOT NULL,
-    has_capability BOOLEAN NOT NULL DEFAULT false,
-    notes TEXT
-);
-
--- ----------------------------------------------------------------------------
--- 4. Products & Customers
--- ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS products (
-    id VARCHAR(36) PRIMARY KEY DEFAULT uuid_generate_v4()::text,
-    business_id VARCHAR(36) NOT NULL REFERENCES businesses(id) ON DELETE CASCADE,
-    sku VARCHAR(100),
-    name VARCHAR(255) NOT NULL,
-    category VARCHAR(100) NOT NULL DEFAULT 'Umum',
-    price DOUBLE PRECISION NOT NULL DEFAULT 0,
-    cost_price DOUBLE PRECISION NOT NULL DEFAULT 0,
-    stock INT NOT NULL DEFAULT 0,
+    
+    nama_produk VARCHAR(255) NOT NULL,
+    kategori VARCHAR(100) NOT NULL,
+    harga DOUBLE PRECISION NOT NULL DEFAULT 0,
+    kapasitas VARCHAR(100) NOT NULL,
+    satuan_penjualan VARCHAR(50) NOT NULL DEFAULT 'pcs',
+    area_layanan VARCHAR(255) NOT NULL,
+    
     is_active BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS customers (
+-- ----------------------------------------------------------------------------
+-- 7. UMKM HUB OPPORTUNITIES TABLE (11 Data Fields for Opportunities Directory)
+-- ----------------------------------------------------------------------------
+CREATE TABLE umkm_hub_opportunities (
     id VARCHAR(36) PRIMARY KEY DEFAULT uuid_generate_v4()::text,
-    business_id VARCHAR(36) NOT NULL REFERENCES businesses(id) ON DELETE CASCADE,
-    name VARCHAR(255) NOT NULL,
-    phone VARCHAR(50),
-    email VARCHAR(255),
-    city VARCHAR(100) DEFAULT 'Bandung',
-    total_spend DOUBLE PRECISION NOT NULL DEFAULT 0,
-    transaction_count INT NOT NULL DEFAULT 0,
-    last_transaction_at TIMESTAMP WITH TIME ZONE,
+    created_by VARCHAR(36) REFERENCES users(id) ON DELETE SET NULL,
+    
+    judul_peluang VARCHAR(255) NOT NULL,          -- 2. Judul Peluang
+    nama_instansi VARCHAR(255) NOT NULL,          -- 3. Nama Instansi/Pihak
+    lokasi VARCHAR(100) NOT NULL,                 -- 4. Lokasi
+    kategori VARCHAR(100) NOT NULL,               -- 5. Kategori
+    jumlah_dan_satuan VARCHAR(100) NOT NULL,    -- 8. Jumlah dan Satuan
+    periode VARCHAR(100) NOT NULL,              -- 9. Periode
+    status "OpportunityStatus" NOT NULL DEFAULT 'Aktif', -- 10. Status
+    link_sumber VARCHAR(500) NOT NULL,            -- 11. Link Sumber
+    deskripsi TEXT NOT NULL,
+    persyaratan TEXT,
+    
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ----------------------------------------------------------------------------
+-- 8. UMKM RECOMMENDATIONS TABLE (AI Scoring, Ranking & Reasons)
+-- ----------------------------------------------------------------------------
+CREATE TABLE umkm_recommendations (
+    id VARCHAR(36) PRIMARY KEY DEFAULT uuid_generate_v4()::text,
+    profile_id VARCHAR(36) NOT NULL REFERENCES business_profiles(id) ON DELETE CASCADE,
+    opportunity_id VARCHAR(36) NOT NULL REFERENCES umkm_hub_opportunities(id) ON DELETE CASCADE,
+    
+    ranking INT NOT NULL DEFAULT 1,              -- 1. Ranking
+    skor_relevansi DOUBLE PRECISION NOT NULL DEFAULT 0.90, -- 6. Skor Relevansi (0.00 - 1.00)
+    alasan_rekomendasi JSONB NOT NULL DEFAULT '[]'::jsonb, -- 7. Alasan Rekomendasi
+    
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(profile_id, opportunity_id)
+);
+
+-- ----------------------------------------------------------------------------
+-- 9. BUSINESS TRANSACTIONS TABLE (Business Intelligence Financial Data)
+-- ----------------------------------------------------------------------------
+CREATE TABLE business_transactions (
+    id VARCHAR(36) PRIMARY KEY DEFAULT uuid_generate_v4()::text,
+    profile_id VARCHAR(36) NOT NULL REFERENCES business_profiles(id) ON DELETE CASCADE,
+    
+    customer_name VARCHAR(255) NOT NULL,
+    product_name VARCHAR(255) NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    amount DOUBLE PRECISION NOT NULL DEFAULT 0,
+    status VARCHAR(50) NOT NULL DEFAULT 'COMPLETED',
+    transaction_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ----------------------------------------------------------------------------
--- 5. Transactions & Items
+-- 10. BUSINESS INSIGHTS TABLE (Actionable BI & Analytics)
 -- ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS transactions (
+CREATE TABLE business_insights (
     id VARCHAR(36) PRIMARY KEY DEFAULT uuid_generate_v4()::text,
-    business_id VARCHAR(36) NOT NULL REFERENCES businesses(id) ON DELETE CASCADE,
-    customer_id VARCHAR(36) REFERENCES customers(id) ON DELETE SET NULL,
-    invoice_number VARCHAR(100) NOT NULL,
-    transaction_date TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    total_amount DOUBLE PRECISION NOT NULL DEFAULT 0,
-    discount_amount DOUBLE PRECISION NOT NULL DEFAULT 0,
-    final_amount DOUBLE PRECISION NOT NULL DEFAULT 0,
-    payment_method VARCHAR(50) NOT NULL DEFAULT 'CASH',
-    status "TransactionStatus" NOT NULL DEFAULT 'COMPLETED',
-    notes TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS transaction_items (
-    id VARCHAR(36) PRIMARY KEY DEFAULT uuid_generate_v4()::text,
-    transaction_id VARCHAR(36) NOT NULL REFERENCES transactions(id) ON DELETE CASCADE,
-    product_id VARCHAR(36) NOT NULL REFERENCES products(id) ON DELETE CASCADE,
-    quantity INT NOT NULL DEFAULT 1,
-    unit_price DOUBLE PRECISION NOT NULL DEFAULT 0,
-    subtotal DOUBLE PRECISION NOT NULL DEFAULT 0
-);
-
--- ----------------------------------------------------------------------------
--- 6. Business Intelligence Engine Output
--- ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS business_insights (
-    id VARCHAR(36) PRIMARY KEY DEFAULT uuid_generate_v4()::text,
-    business_id VARCHAR(36) NOT NULL REFERENCES businesses(id) ON DELETE CASCADE,
+    profile_id VARCHAR(36) NOT NULL REFERENCES business_profiles(id) ON DELETE CASCADE,
+    
     title VARCHAR(255) NOT NULL,
-    summary TEXT NOT NULL,
-    category "InsightCategory" NOT NULL DEFAULT 'REVENUE',
-    impact "InsightImpact" NOT NULL DEFAULT 'MEDIUM',
-    data_source VARCHAR(255),
-    actionable_step TEXT,
-    is_read BOOLEAN NOT NULL DEFAULT false,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
--- ----------------------------------------------------------------------------
--- 7. Opportunity Matcher Engine
--- ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS opportunities (
-    id VARCHAR(36) PRIMARY KEY DEFAULT uuid_generate_v4()::text,
-    title VARCHAR(255) NOT NULL,
-    organizer VARCHAR(255) NOT NULL,
-    category "OpportunityCategory" NOT NULL DEFAULT 'EXHIBITION',
     description TEXT NOT NULL,
-    city VARCHAR(100) NOT NULL DEFAULT 'Bandung',
-    province VARCHAR(100) NOT NULL DEFAULT 'Jawa Barat',
-    min_scale "ScaleStage" NOT NULL DEFAULT 'MICRO',
-    funding_amount DOUBLE PRECISION,
-    deadline TIMESTAMP WITH TIME ZONE NOT NULL,
-    link_url VARCHAR(500),
-    is_verified BOOLEAN NOT NULL DEFAULT true,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS opportunity_requirements (
-    id VARCHAR(36) PRIMARY KEY DEFAULT uuid_generate_v4()::text,
-    opportunity_id VARCHAR(36) NOT NULL REFERENCES opportunities(id) ON DELETE CASCADE,
-    requirement VARCHAR(255) NOT NULL,
-    is_mandatory BOOLEAN NOT NULL DEFAULT true
-);
-
-CREATE TABLE IF NOT EXISTS recommendations (
-    id VARCHAR(36) PRIMARY KEY DEFAULT uuid_generate_v4()::text,
-    business_id VARCHAR(36) NOT NULL REFERENCES businesses(id) ON DELETE CASCADE,
-    opportunity_id VARCHAR(36) NOT NULL REFERENCES opportunities(id) ON DELETE CASCADE,
-    match_score DOUBLE PRECISION NOT NULL DEFAULT 0.0,
-    match_reasons JSONB NOT NULL DEFAULT '[]'::jsonb,
-    status VARCHAR(50) NOT NULL DEFAULT 'NEW',
+    insight_type VARCHAR(50) NOT NULL, -- GROWTH, MARGIN, PRODUCT, MARKET
+    period VARCHAR(50) NOT NULL DEFAULT 'Bulan Ini',
+    metric_value DOUBLE PRECISION DEFAULT 0.0,
+    
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ----------------------------------------------------------------------------
--- 8. RAG & Knowledge Base Engine
+-- 11. INDEXES FOR FAST QUERY PERFORMANCE
 -- ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS knowledge_documents (
-    id VARCHAR(36) PRIMARY KEY DEFAULT uuid_generate_v4()::text,
-    title VARCHAR(255) NOT NULL,
-    category "DocCategory" NOT NULL DEFAULT 'GENERAL',
-    tags VARCHAR(500),
-    source_url VARCHAR(500),
-    file_type VARCHAR(50) NOT NULL DEFAULT 'TXT',
-    content TEXT NOT NULL,
-    author VARCHAR(100) DEFAULT 'Tim APH YAH',
-    is_published BOOLEAN NOT NULL DEFAULT true,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS knowledge_chunks (
-    id VARCHAR(36) PRIMARY KEY DEFAULT uuid_generate_v4()::text,
-    document_id VARCHAR(36) NOT NULL REFERENCES knowledge_documents(id) ON DELETE CASCADE,
-    chunk_index INT NOT NULL,
-    content TEXT NOT NULL
-);
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_business_profiles_user ON business_profiles(user_id);
+CREATE INDEX idx_business_products_profile ON business_products(profile_id);
+CREATE INDEX idx_opportunities_status ON umkm_hub_opportunities(status);
+CREATE INDEX idx_opportunities_kategori ON umkm_hub_opportunities(kategori);
+CREATE INDEX idx_recommendations_profile ON umkm_recommendations(profile_id);
+CREATE INDEX idx_transactions_profile ON business_transactions(profile_id);
 
 -- ----------------------------------------------------------------------------
--- 9. Regional Context (West Java Focus)
--- ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS regional_contexts (
-    id VARCHAR(36) PRIMARY KEY DEFAULT uuid_generate_v4()::text,
-    city_kabupaten VARCHAR(100) UNIQUE NOT NULL,
-    priority_sector VARCHAR(255) NOT NULL,
-    dinas_contact VARCHAR(255),
-    program_summary TEXT
-);
-
--- ----------------------------------------------------------------------------
--- INDEXES FOR OPTIMAL QUERY PERFORMANCE
--- ----------------------------------------------------------------------------
-CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
-CREATE INDEX IF NOT EXISTS idx_businesses_category ON businesses(category);
-CREATE INDEX IF NOT EXISTS idx_businesses_city ON businesses(city);
-CREATE INDEX IF NOT EXISTS idx_products_business ON products(business_id);
-CREATE INDEX IF NOT EXISTS idx_transactions_business ON transactions(business_id);
-CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(transaction_date);
-CREATE INDEX IF NOT EXISTS idx_insights_business ON business_insights(business_id);
-CREATE INDEX IF NOT EXISTS idx_recommendations_business ON recommendations(business_id);
-CREATE INDEX IF NOT EXISTS idx_opportunities_category ON opportunities(category);
-CREATE INDEX IF NOT EXISTS idx_knowledge_category ON knowledge_documents(category);
-
--- ----------------------------------------------------------------------------
--- ROW LEVEL SECURITY (RLS) POLICIES
+-- 12. ROW LEVEL SECURITY (RLS) POLICIES
 -- ----------------------------------------------------------------------------
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE businesses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE business_profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE products ENABLE ROW LEVEL SECURITY;
-ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE business_products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE umkm_hub_opportunities ENABLE ROW LEVEL SECURITY;
+ALTER TABLE umkm_recommendations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE business_transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE business_insights ENABLE ROW LEVEL SECURITY;
-ALTER TABLE opportunities ENABLE ROW LEVEL SECURITY;
-ALTER TABLE recommendations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE knowledge_documents ENABLE ROW LEVEL SECURITY;
 
--- Allow read/write access for service role or public demo access
-CREATE POLICY "Public full access on users" ON users FOR ALL USING (true);
-CREATE POLICY "Public full access on businesses" ON businesses FOR ALL USING (true);
-CREATE POLICY "Public full access on business_profiles" ON business_profiles FOR ALL USING (true);
-CREATE POLICY "Public full access on products" ON products FOR ALL USING (true);
-CREATE POLICY "Public full access on transactions" ON transactions FOR ALL USING (true);
-CREATE POLICY "Public full access on business_insights" ON business_insights FOR ALL USING (true);
-CREATE POLICY "Public full access on opportunities" ON opportunities FOR ALL USING (true);
-CREATE POLICY "Public full access on recommendations" ON recommendations FOR ALL USING (true);
-CREATE POLICY "Public full access on knowledge_documents" ON knowledge_documents FOR ALL USING (true);
+-- Allow Public/Authenticated Full Access Policies (Supabase Demo Mode)
+CREATE POLICY "Public read/write on users" ON users FOR ALL USING (true);
+CREATE POLICY "Public read/write on business_profiles" ON business_profiles FOR ALL USING (true);
+CREATE POLICY "Public read/write on business_products" ON business_products FOR ALL USING (true);
+CREATE POLICY "Public read/write on umkm_hub_opportunities" ON umkm_hub_opportunities FOR ALL USING (true);
+CREATE POLICY "Public read/write on umkm_recommendations" ON umkm_recommendations FOR ALL USING (true);
+CREATE POLICY "Public read/write on business_transactions" ON business_transactions FOR ALL USING (true);
+CREATE POLICY "Public read/write on business_insights" ON business_insights FOR ALL USING (true);
 
--- ----------------------------------------------------------------------------
--- SEED DEMO DATA
--- ----------------------------------------------------------------------------
--- Clear pre-existing demo user if exists
-DELETE FROM users WHERE email = 'demo@aphyah.id';
+-- ============================================================================
+-- 13. SEED DATA DEMO (ALL PLATFORM DATA INCLUDED)
+-- ============================================================================
 
--- Insert Demo User (Password: Demo123!)
-INSERT INTO users (id, email, password_hash, full_name, role, phone, is_active)
-VALUES (
-    'usr_demo_001',
-    'demo@aphyah.id',
-    '$2a$10$wJ9B9T1wVbE3P2s7bZJ/6.f2K8W2D7TzE5W0L2V5P4M1K2L3N4O5P', -- hash for Demo123!
-    'Budi Santoso (Demo)',
-    'UMKM_OWNER',
-    '081234567890',
-    true
-) ON CONFLICT (email) DO NOTHING;
+-- A. Users Data (1 Admin & 1 UMKM Owner)
+INSERT INTO users (id, email, password_hash, full_name, role, phone) VALUES 
+('usr_admin_001', 'admin@aphyah.id', '$2a$10$wJ9B9T1wVbE3P2s7bZJ/6.f2K8W2D7TzE5W0L2V5P4M1K2L3N4O5P', 'Administrator UMKM Hub', 'ADMIN', '081122334455'),
+('usr_owner_001', 'demo@aphyah.id', '$2a$10$wJ9B9T1wVbE3P2s7bZJ/6.f2K8W2D7TzE5W0L2V5P4M1K2L3N4O5P', 'Budi Santoso', 'UMKM_OWNER', '081234567890');
 
--- Insert Demo Business
-INSERT INTO businesses (id, name, category, city, province, description, address, phone, email)
-VALUES (
-    'biz_kopi_001',
-    'Kopi Karawang Heritage',
-    'KULINER',
-    'Karawang',
-    'Jawa Barat',
-    'Produsen kopi lokal khas Karawang dengan varian Robusta Karawang dan Arabica Puntang pilihan.',
-    'Jl. Interchange Karawang Barat No. 45, Karawang',
-    '081234567890',
-    'info@kopikarawang.id'
-) ON CONFLICT (id) DO NOTHING;
+-- B. Business Profile Data (5 Sections)
+INSERT INTO business_profiles (
+    id, user_id,
+    -- Section 1: Identitas
+    nama_usaha, nama_pemilik, kabupaten_kota, alamat_usaha, tahun_mulai_usaha, deskripsi_usaha,
+    -- Section 2: Kategori & Kemampuan
+    bidang_usaha, kategori, target_pasar, kapasitas, area_layanan,
+    -- Section 3: Pengalaman & Kesiapan
+    pengalaman_b2b, pengalaman_pesanan_besar, legalitas_usaha, kesediaan_memenuhi_pesanan_besar, persyaratan_kemampuan_khusus,
+    -- Section 4: Preferensi Kemitraan
+    jenis_peluang_diminati, wilayah_peluang_diinginkan, minimal_pesanan, maksimal_pesanan, deskripsi_kerjasama
+) VALUES (
+    'prof_kopi_001', 'usr_owner_001',
+    'Kopi Karawang Heritage', 'Budi Santoso', 'Kabupaten Karawang', 'Jl. Interchange Karawang Barat No. 45', 2021, 'Produsen kopi specialty olahan lokal Karawang berkualitas tinggi dengan roasting konsisten.',
+    'Pengolahan Makanan & Minuman', 'Kopi & Minuman Olahan', 'Cafe, Hotel, Retail, dan Korporat', '600 kg / bulan', 'Jawa Barat & Jabodetabek',
+    'Memasok 15 cafe lokal di Karawang & Bandung serta 3 dinas Pemkab', 'Memenuhi pesanan hampers 1.000 box Telkom Indonesia', 'NIB, PIRT No. 210321501099-26, Halal MUI, Hak Merek (HKI)', 'Ya', 'Sertifikasi Roaster Teruji, Laboratorium Cupping Mandiri',
+    'Pasokan B2B, Pengadaan Korporat, Reseller Grosir', 'Jawa Barat, DKI Jakarta, Banten', '50 Pouch / 10kg', '2.000 Pouch / 500kg', 'Kerjasama pasokan berkala jangka panjang 6-12 bulan'
+);
 
--- Map User to Business
-INSERT INTO business_users (id, user_id, business_id, role)
-VALUES ('bu_demo_001', 'usr_demo_001', 'biz_kopi_001', 'UMKM_OWNER')
-ON CONFLICT DO NOTHING;
+-- C. Business Products Data (Section 5: Katalog Produk/Jasa)
+INSERT INTO business_products (id, profile_id, nama_produk, kategori, harga, kapasitas, satuan_penjualan, area_layanan) VALUES
+('prod_001', 'prof_kopi_001', 'Kopi Arabika Specialty Karawang 250g', 'Biji & Bubuk Kopi', 65000, '300 kg / bulan', 'pouch', 'Nasional'),
+('prod_002', 'prof_kopi_001', 'Kopi Robusta Blend Karawang 250g', 'Biji & Bubuk Kopi', 45000, '500 kg / bulan', 'pouch', 'Nasional'),
+('prod_003', 'prof_kopi_001', 'Cold Brew Bottled Signature 250ml', 'Minuman Siap Minum', 25000, '400 botol / bulan', 'botol', 'Jabodetabek & Karawang'),
+('prod_004', 'prof_kopi_001', 'Drip Bag Coffee Box (Isi 5 Sachet)', 'Kopi Praktis', 35000, '250 box / bulan', 'box', 'Nasional');
 
--- Insert Business Profile
-INSERT INTO business_profiles (id, business_id, scale_stage, monthly_revenue, employee_count, operational_years, readiness_score, digital_adoption_score, financial_health_score)
-VALUES (
-    'prof_kopi_001',
-    'biz_kopi_001',
-    'SMALL',
-    48500000,
-    5,
-    3,
-    82,
-    75,
-    80
-) ON CONFLICT (business_id) DO NOTHING;
-
--- Insert Sample Opportunities
-INSERT INTO opportunities (id, title, organizer, category, description, city, province, min_scale, funding_amount, deadline, link_url, is_verified)
-VALUES
+-- D. UMKM Hub Opportunities Data (Admin Managed Opportunities)
+INSERT INTO umkm_hub_opportunities (
+    id, created_by, judul_peluang, nama_instansi, lokasi, kategori, jumlah_dan_satuan, periode, status, link_sumber, deskripsi, persyaratan
+) VALUES
 (
-    'opp_001',
-    'Kurasi UMKM Ekspor Jawa Barat 2026',
-    'Dinas Indag Jabar & Bank Indonesia',
-    'EXHIBITION',
-    'Program pendampingan dan fasilitasi ekspor untuk produk unggulan Jawa Barat sektor Kuliner dan Fashion ke pasar ASEAN.',
-    'Bandung',
-    'Jawa Barat',
-    'SMALL',
-    50000000,
-    NOW() + INTERVAL '30 days',
-    'https://disindag.jabarprov.go.id/ekspor-2026',
-    true
+    'opp_001', 'usr_admin_001',
+    'Pengadaan Bingkisan Kopi & Suvenir UMKM Pemkab Karawang',
+    'Dinas Koperasi & UMKM Kabupaten Karawang',
+    'Kabupaten Karawang',
+    'F&B / Pengadaan',
+    '500 Box Suvenir',
+    '1 Oktober - 15 November 2026',
+    'Aktif',
+    'https://diskopukm.karawangkab.go.id/peluang-pengadaan-2026',
+    'Pengadaan paket suvenir kopi lokal Karawang untuk perayaan HUT Karawang dan event kunjungan kerja dinas.',
+    'Legalitas NIB & Halal terverifikasi, kemasan kotak eksklusif berlogo instansi.'
 ),
 (
-    'opp_002',
-    'Subsidi Sertifikasi Halal Gratis (SEHATI) Jabar',
-    'BPJPH & Kemenag Jabar',
-    'DIGITALIZATION',
-    'Program sertifikasi halal gratis jalur self declare untuk UMKM produk makanan dan minuman skala mikro & kecil.',
-    'Bandung',
-    'Jawa Barat',
-    'MICRO',
-    0,
-    NOW() + INTERVAL '15 days',
-    'https://sehati.halal.go.id',
-    true
+    'opp_002', 'usr_admin_001',
+    'Pasokan Biji Kopi Roasting untuk Jaringan Cafe Bandung',
+    'Kolektif Cafe Bandung Raya',
+    'Kota Bandung',
+    'F&B / Supply Agreement',
+    '250 kg / bulan',
+    'November 2026 - April 2027 (6 Bulan)',
+    'Aktif',
+    'https://bandungcafenetwork.com/supply-partner-2026',
+    'Kemitraan pasokan biji kopi Arabika & Robusta roasted bean tingkat Medium-to-Dark untuk 8 outlet cafe.',
+    'Sampel tes uji rasa (cupping score >80), konsistensi pasokan bulanan.'
 ),
 (
-    'opp_003',
-    'Kredit Mesra (Masyarakat Sejahtera) bjb',
-    'Bank bjb & Pemprov Jabar',
-    'FINANCING',
-    'Pinjaman tanpa bunga dan tanpa agunan hingga Rp 5 juta untuk UMKM berbasis komunitas rumah ibadah.',
-    'Bandung',
-    'Jawa Barat',
-    'MICRO',
-    5000000,
-    NOW() + INTERVAL '60 days',
-    'https://bankbjb.co.id/kredit-mesra',
-    true
-)
-ON CONFLICT (id) DO NOTHING;
+    'opp_003', 'usr_admin_001',
+    'Display Ritel Produk Suvenir Kopi Rest Area Tol Cipularang',
+    'Pengelola Rest Area KM 88 Purbaleunyi',
+    'Kabupaten Purwakarta',
+    'Retail / Etalase Suvenir',
+    '150 Box / bulan',
+    '1 Oktober 2026 - 31 Maret 2027',
+    'Aktif',
+    'https://jasamarga.co.id/pojok-umkm-restarea',
+    'Fasilitas etalase ritel untuk produk olahan kopi praktis (Drip bag & Cold Brew) di pojok UMKM Jabar.',
+    'Daya simpan produk >6 bulan, kemasan eye-catching dan tahan banting.'
+);
 
--- Insert Opportunity Requirements
-INSERT INTO opportunity_requirements (id, opportunity_id, requirement, is_mandatory)
-VALUES
-('req_001', 'opp_001', 'NIB (Nomor Induk Berusaha)', true),
-('req_002', 'opp_001', 'Omset Minimal Rp 300 Juta / Tahun', true),
-('req_003', 'opp_001', 'Sudah Beroperasi Minimal 2 Tahun', true),
-('req_004', 'opp_002', 'Produk Makanan / Minuman Tidak Berisiko', true),
-('req_005', 'opp_002', 'KTP & NIB Berbasis Jawa Barat', true)
-ON CONFLICT (id) DO NOTHING;
+-- E. Recommendations Data (Matches Business Profile with Opportunities)
+INSERT INTO umkm_recommendations (id, profile_id, opportunity_id, ranking, skor_relevansi, alasan_rekomendasi) VALUES
+(
+    'rec_001', 'prof_kopi_001', 'opp_001', 1, 0.95,
+    '["Kategori produk kopi specialty sesuai", "Lokasi Kabupaten Karawang tepat sasaran", "Legalitas NIB & Halal terverifikasi", "Kapasitas produksi 600kg/bln mencukupi"]'::jsonb
+),
+(
+    'rec_002', 'prof_kopi_001', 'opp_002', 2, 0.89,
+    '["Produk roasted bean siap pasokan B2B", "Pengalaman pasokan cafe terbukti", "Wilayah kemitraan Jawa Barat"]'::jsonb
+),
+(
+    'rec_003', 'prof_kopi_001', 'opp_003', 3, 0.82,
+    '["Katalog produk Drip Bag & Cold Brew sesuai standar ritel", "Kemasan produk berizin P-IRT"]'::jsonb
+);
 
--- Insert Regional Context
-INSERT INTO regional_contexts (id, city_kabupaten, priority_sector, dinas_contact, program_summary)
-VALUES
-('reg_001', 'Karawang', 'Agro-industri, Kuliner Olahan, Manufaktur Komponen', 'Dinas Koperasi & UMKM Kab. Karawang (0267-402123)', 'Fokus pengembangan UMKM penyokong rantai pasok industri & pusat oleh-oleh kuliner.'),
-('reg_002', 'Kota Bandung', 'Kuliner Creative, Fashion & Craft, Software/Digital', 'Dinas Koperasi & UKM Kota Bandung (022-7201234)', 'Program Bandung Creative Hub & Akselerasi Ekspor Digital.')
-ON CONFLICT (id) DO NOTHING;
+-- F. Transactions Data (Business Intelligence Analytics)
+INSERT INTO business_transactions (id, profile_id, customer_name, product_name, category, amount, status, transaction_date) VALUES
+('tx_001', 'prof_kopi_001', 'Cafe Sejahtera Bandung', 'Kopi Robusta Blend Karawang 250g', 'Biji & Bubuk Kopi', 2250000, 'COMPLETED', '2026-09-15'),
+('tx_002', 'prof_kopi_001', 'Dinas Koperasi Karawang', 'Drip Bag Coffee Box', 'Kopi Praktis', 3500000, 'COMPLETED', '2026-09-20'),
+('tx_003', 'prof_kopi_001', 'Hotel Grand Karawang', 'Kopi Arabika Specialty Karawang 250g', 'Biji & Bubuk Kopi', 3685000, 'COMPLETED', '2026-09-28');
 
--- Schema setup complete notification
-SELECT 'APH YAH Supabase Schema and Seed Data initialized successfully!' AS result;
+-- G. Insights Data (Actionable BI Insights)
+INSERT INTO business_insights (id, profile_id, title, description, insight_type, period, metric_value) VALUES
+('ins_001', 'prof_kopi_001', 'Pertumbuhan Omset B2B Meningkat Spesifik', 'Penjualan ke segmen cafe wholesale naik 32% dalam 30 hari terakhir.', 'GROWTH', 'Bulan Ini', 0.32),
+('ins_002', 'prof_kopi_001', 'Produk Drip Bag Menjadi Favorit Instansi', 'Katalog Drip Bag Coffee Box menyumbang 37% dari total margin bersih usaha.', 'PRODUCT', 'Kuartal III', 0.37),
+('ins_003', 'prof_kopi_001', 'Potensi Ekspansi Pasar Rest Area Cipularang', 'Rekomendasi AI menunjukkan tingkat kesesuaian 82% untuk etalase suvenir tol.', 'MARKET', 'Prospek', 0.82);
+
+-- ----------------------------------------------------------------------------
+-- 14. FINAL EXECUTION CONFIRMATION
+-- ----------------------------------------------------------------------------
+SELECT 'Supabase Database reset and final schema script executed successfully!' AS status_message;

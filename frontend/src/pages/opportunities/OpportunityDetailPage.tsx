@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { AppLayout } from '../../components/layout/AppLayout';
 import { Card } from '../../components/common/Card';
 import { Badge } from '../../components/common/Badge';
-import { ArrowLeft, Building, MapPin, Calendar, ExternalLink, MessageSquare, CheckCircle2, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowLeft, Building, MapPin, Calendar, ExternalLink, MessageSquare, CheckCircle2, Sparkles } from 'lucide-react';
 import api from '../../lib/api';
 
 export const OpportunityDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [opp, setOpp] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDetail = async () => {
@@ -30,81 +29,81 @@ export const OpportunityDetailPage: React.FC = () => {
 
   if (loading || !opp) {
     return (
-      <AppLayout title="Opportunity Detail">
-        <div className="text-center py-12 text-slate-400">Memuat detail peluang...</div>
+      <AppLayout title="Detail Peluang">
+        <div className="text-center py-12 text-slate-500 font-mono text-xs">Memuat detail peluang...</div>
       </AppLayout>
     );
   }
 
   return (
-    <AppLayout title="Opportunity Detail" subtitle={opp.title}>
+    <AppLayout title="Detail Peluang" subtitle={opp.judul_peluang || opp.title}>
       <Link
-        to="/opportunities"
-        className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-200 transition-colors mb-4"
+        to="/recommendations"
+        className="inline-flex items-center gap-1.5 text-xs text-sky-600 hover:text-sky-700 transition-colors mb-4 font-bold"
       >
         <ArrowLeft className="w-4 h-4" />
-        <span>Kembali ke Katalog Peluang</span>
+        <span>Kembali ke Rekomendasi</span>
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Details */}
         <div className="lg:col-span-2 space-y-6">
-          <Card className="space-y-6 border border-slate-800">
+          <Card className="space-y-6 border border-slate-200 bg-white shadow-sm rounded-3xl">
             <div className="flex items-center justify-between">
-              <Badge variant="indigo">{opp.opportunity_type}</Badge>
-              <span className="text-xs text-slate-400 font-mono">Status: <span className="text-emerald-400 font-bold">{opp.status}</span></span>
+              <Badge variant="indigo">{opp.kategori || opp.category || 'Umum'}</Badge>
+              <span className="text-xs text-slate-500 font-bold">Status: <span className="text-emerald-600 font-black uppercase">{opp.status || 'Aktif'}</span></span>
             </div>
 
             <div>
-              <h1 className="text-2xl font-extrabold text-slate-100">{opp.title}</h1>
-              <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400 mt-2">
-                <span className="flex items-center gap-1">
-                  <Building className="w-4 h-4 text-slate-500" />
-                  {opp.organization_name}
+              <h1 className="text-2xl font-black text-slate-900 leading-tight">{opp.judul_peluang || opp.title}</h1>
+              <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-600 mt-3">
+                <span className="flex items-center gap-1.5">
+                  <Building className="w-4 h-4 text-sky-500" />
+                  {opp.nama_instansi || opp.organization_name}
                 </span>
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-4 h-4 text-rose-400" />
-                  {opp.location}
+                <span className="flex items-center gap-1.5">
+                  <MapPin className="w-4 h-4 text-rose-500" />
+                  {opp.lokasi || opp.location}
                 </span>
-                <span className="flex items-center gap-1 font-mono">
-                  <Calendar className="w-4 h-4 text-slate-500" />
-                  {opp.source_date}
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="w-4 h-4 text-indigo-500" />
+                  {opp.periode || opp.source_date || '2026'}
                 </span>
               </div>
             </div>
 
             <div className="space-y-2">
-              <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Deskripsi Peluang</h4>
-              <p className="text-xs text-slate-300 leading-relaxed bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
-                {opp.description}
+              <h4 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Deskripsi Peluang</h4>
+              <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100 font-medium">
+                {opp.deskripsi || opp.description || 'Tidak ada deskripsi spesifik.'}
               </p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Persyaratan Mitra UMKM</h4>
-              <p className="text-xs text-slate-300 leading-relaxed bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
-                {opp.requirement}
+              <h4 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Persyaratan Mitra UMKM</h4>
+              <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100 font-medium">
+                {opp.persyaratan || opp.requirement || 'Tidak ada persyaratan khusus.'}
               </p>
             </div>
 
             {/* Why This Opportunity Box */}
-            <div className="p-5 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 space-y-3">
-              <h4 className="text-xs font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-indigo-400" />
-                <span>Why this opportunity?</span>
+            <div className="p-5 rounded-2xl bg-sky-50 border border-sky-100 space-y-3">
+              <h4 className="text-xs font-extrabold text-sky-800 uppercase tracking-wider flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-sky-500" />
+                <span>Mengapa Peluang Ini Relevan?</span>
               </h4>
-              <ul className="space-y-1.5 text-xs text-slate-300">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-indigo-400" />
-                  <span>Kategori <strong className="text-slate-100">{opp.category}</strong> sangat presisi dengan lini produk Kopi Karawang.</span>
+              <ul className="space-y-2 text-xs text-slate-700 font-medium">
+                <li className="flex items-center gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-sky-500 shrink-0" />
+                  <span>Kategori <strong className="text-slate-900">{opp.kategori || opp.category}</strong> sangat presisi dengan lini produk usaha Anda.</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-indigo-400" />
-                  <span>Lokasi di <strong className="text-slate-100">{opp.location}</strong> terjangkau oleh armada logistik lokal.</span>
+                <li className="flex items-center gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-sky-500 shrink-0" />
+                  <span>Lokasi di <strong className="text-slate-900">{opp.lokasi || opp.location}</strong> terjangkau oleh armada logistik lokal.</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-indigo-400" />
-                  <span>Kapasitas <strong className="text-emerald-400">{opp.capacity_required}</strong> aman di bawah batas maksimal sangrai bulanan (600kg).</span>
+                <li className="flex items-center gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-sky-500 shrink-0" />
+                  <span>Kuantitas <strong className="text-slate-900">{opp.jumlah_dan_satuan || opp.capacity_required}</strong> masih dalam batas kapasitas produksi Anda.</span>
                 </li>
               </ul>
             </div>
@@ -113,41 +112,41 @@ export const OpportunityDetailPage: React.FC = () => {
 
         {/* Sidebar Provenance & Action */}
         <div className="space-y-6">
-          <Card className="space-y-4 border border-slate-800">
-            <h3 className="text-sm font-bold text-slate-100 border-b border-slate-800 pb-2">
-              Provenance Data Peluang
+          <Card className="space-y-4 border border-slate-200 bg-white shadow-sm rounded-3xl">
+            <h3 className="text-sm font-black text-slate-900 border-b border-slate-100 pb-3">
+              Informasi Sumber Data
             </h3>
 
-            <div className="space-y-3 text-xs">
+            <div className="space-y-4 text-xs">
               <div>
-                <span className="text-slate-500 block text-[10px] uppercase">Jenis Data Source</span>
-                <span className="font-bold text-emerald-400">{opp.source}</span>
+                <span className="text-slate-400 block text-[10px] font-bold uppercase tracking-wider mb-1">Penyelenggara</span>
+                <span className="font-bold text-slate-800">{opp.nama_instansi || opp.source || 'Instansi Terkait'}</span>
               </div>
               <div>
-                <span className="text-slate-500 block text-[10px] uppercase">Source URL</span>
-                {opp.source_url ? (
+                <span className="text-slate-400 block text-[10px] font-bold uppercase tracking-wider mb-1">Link Sumber</span>
+                {opp.link_sumber || opp.source_url ? (
                   <a
-                    href={opp.source_url}
+                    href={opp.link_sumber || opp.source_url}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-indigo-400 hover:underline flex items-center gap-1 font-mono text-[11px] truncate"
+                    className="text-sky-600 hover:text-sky-700 hover:underline flex items-center gap-1.5 font-bold truncate bg-sky-50 p-2 rounded-lg border border-sky-100"
                   >
-                    <span>{opp.source_url}</span>
-                    <ExternalLink className="w-3 h-3" />
+                    <span className="truncate">{opp.link_sumber || opp.source_url}</span>
+                    <ExternalLink className="w-3.5 h-3.5 shrink-0" />
                   </a>
                 ) : (
-                  <span className="text-slate-400">Public Signal</span>
+                  <span className="text-slate-500 font-medium">Data Publik Terverifikasi</span>
                 )}
               </div>
             </div>
 
-            <div className="pt-3 border-t border-slate-800 space-y-2">
+            <div className="pt-4 border-t border-slate-100 space-y-2">
               <Link
                 to="/assistant"
-                className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-extrabold text-xs shadow-lg shadow-sky-500/25 transition-all flex items-center justify-center gap-2 active:scale-95"
               >
                 <MessageSquare className="w-4 h-4" />
-                <span>Siapkan Penawaran via AI Assistant</span>
+                <span>Siapkan Penawaran via AI</span>
               </Link>
             </div>
           </Card>

@@ -7,241 +7,131 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum UserRole {
+  ADMIN
+  UMKM_OWNER
+}
+
+enum OpportunityStatus {
+  Aktif
+  Terbuka
+  Ditutup
+  Proses_Seleksi
+}
+
+enum YesNoSyarat {
+  Ya
+  Tidak
+  Dengan_Syarat
+}
+
 model User {
-  user_id       String         @id @default(uuid())
-  name          String
-  email         String         @unique
+  id            String   @id @default(uuid())
+  email         String   @unique
   password_hash String
-  role          String         @default("OWNER") // OWNER, ADMIN
-  created_at    DateTime       @default(now())
-  
-  business_users BusinessUser[]
-}
-
-model BusinessUser {
-  business_user_id String   @id @default(uuid())
-  business_id      String
-  user_id          String
-  role             String   @default("OWNER")
-  
-  user             User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  business         Business @relation(fields: [business_id], references: [business_id], onDelete: Cascade)
-
-  @@unique([business_id, user_id])
-}
-
-model Business {
-  business_id     String   @id @default(uuid())
-  name            String
-  type            String
-  description     String?  @db.Text
-  province        String   @default("Jawa Barat")
-  city_regency    String
-  district        String
-  employee_count  Int      @default(1)
-  years_operating Int      @default(1)
-  phone           String?
-  email           String?
-  website         String?
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt @default(now())
-
-  business_users        BusinessUser[]
-  business_profiles     BusinessProfile[]
-  business_goals        BusinessGoal[]
-  business_capabilities BusinessCapability[]
-  products              Product[]
-  customers             Customer[]
-  transactions          Transaction[]
-  insights              BusinessInsight[]
-  recommendations       Recommendation[]
-  knowledge_documents   KnowledgeDocument[]
-}
-
-model BusinessProfile {
-  profile_id           String   @id @default(uuid())
-  business_id          String
-  target_market        String?
-  business_goal_context String? @db.Text
-  sales_channels       String?  // JSON string or comma-separated channels
-  b2b_experience       String?
-  capacity_description String?  @db.Text
-  digital_maturity     String?  @default("Medium")
-
-  business Business @relation(fields: [business_id], references: [business_id], onDelete: Cascade)
-}
-
-model BusinessGoal {
-  goal_id       String   @id @default(uuid())
-  business_id   String
-  goal_type     String
-  priority      String   @default("HIGH")
-  target_period String
-
-  business Business @relation(fields: [business_id], references: [business_id], onDelete: Cascade)
-}
-
-model BusinessCapability {
-  capability_id   String  @id @default(uuid())
-  business_id     String
-  capability_type String
-  description     String? @db.Text
-  capacity_value  Float
-  unit            String
-
-  business Business @relation(fields: [business_id], references: [business_id], onDelete: Cascade)
-}
-
-model Product {
-  product_id   String   @id @default(uuid())
-  business_id  String
-  product_name String
-  category     String
-  description  String?  @db.Text
-  price        Float
-  unit         String   @default("pcs")
-  capacity     Float    @default(100)
-  is_active    Boolean  @default(true)
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt @default(now())
-
-  business          Business          @relation(fields: [business_id], references: [business_id], onDelete: Cascade)
-  transaction_items TransactionItem[]
-}
-
-model Customer {
-  customer_id   String   @id @default(uuid())
-  business_id   String
-  name          String
-  customer_type String   @default("Retail") // Retail, Cafe, Reseller, B2B
-  segment       String?
-  location      String?
-  created_at    DateTime @default(now())
-
-  business     Business      @relation(fields: [business_id], references: [business_id], onDelete: Cascade)
-  transactions Transaction[]
-}
-
-model Transaction {
-  transaction_id   String   @id @default(uuid())
-  business_id      String
-  customer_id      String
-  transaction_date DateTime
-  channel          String   @default("Offline Store") // Offline, E-commerce, B2B Direct, Social Media
-  total_amount     Float
-  created_at       DateTime @default(now())
-
-  business Business @relation(fields: [business_id], references: [business_id], onDelete: Cascade)
-  customer Customer @relation(fields: [customer_id], references: [customer_id], onDelete: Cascade)
-
-  items TransactionItem[]
-}
-
-model TransactionItem {
-  transaction_item_id String @id @default(uuid())
-  transaction_id      String
-  product_id          String
-  quantity            Int
-  unit_price          Float
-  subtotal            Float
-
-  transaction Transaction @relation(fields: [transaction_id], references: [transaction_id], onDelete: Cascade)
-  product     Product     @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
-}
-
-model BusinessInsight {
-  insight_id   String   @id @default(uuid())
-  business_id  String
-  insight_type String   // product_performance, revenue_trend, channel_mix, growth_opp
-  title        String
-  description  String   @db.Text
-  metric_value Float
-  period_start String
-  period_end   String
-  generated_at DateTime @default(now())
-
-  business Business @relation(fields: [business_id], references: [business_id], onDelete: Cascade)
-}
-
-model Opportunity {
-  opportunity_id    String   @id @default(uuid())
-  title             String
-  organization_name String
-  opportunity_type  String   // Procurement, Partnership, Supply Agreement, Corporate Gift, Distributor
-  category          String   // F&B, Agriculture, Coffee, Craft, Retail
-  description       String   @db.Text
-  location          String   // City/Regency in Jabar e.g. Karawang, Bandung, Bekasi
-  requirement       String   @db.Text
-  capacity_required String
-  source            String   // Verified Opportunity, Public Signal, Curated Prototype
-  source_url        String?
-  source_date       String
-  status            String   @default("Active") // Active, Closed, Draft
-  created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt @default(now())
-
-  requirements    OpportunityRequirement[]
-  recommendations Recommendation[]
-}
-
-model OpportunityRequirement {
-  requirement_id String @id @default(uuid())
-  opportunity_id String
-  attribute      String
-  value          String
-  weight         Float  @default(1.0)
-
-  opportunity Opportunity @relation(fields: [opportunity_id], references: [opportunity_id], onDelete: Cascade)
-}
-
-model Recommendation {
-  recommendation_id String   @id @default(uuid())
-  business_id       String
-  opportunity_id    String
-  score             Float
-  rank              Int
-  reason            String   // JSON string of array e.g. ["category_match", "location_match", "capacity_match"]
-  generated_at      DateTime @default(now())
-
-  business    Business    @relation(fields: [business_id], references: [business_id], onDelete: Cascade)
-  opportunity Opportunity @relation(fields: [opportunity_id], references: [opportunity_id], onDelete: Cascade)
-}
-
-model KnowledgeDocument {
-  document_id   String   @id @default(uuid())
-  business_id   String
-  document_type String   // Catalog, Pricing, FAQ, Policy, Operations
-  title         String
-  content       String   @db.Text
-  source        String   @default("Manual Input")
-  version       String   @default("1.0")
+  full_name     String
+  role          UserRole @default(UMKM_OWNER)
+  phone         String?
+  is_active     Boolean  @default(true)
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt @default(now())
 
-  business Business         @relation(fields: [business_id], references: [business_id], onDelete: Cascade)
-  chunks   KnowledgeChunk[]
+  profiles      BusinessProfile[]
+  opportunities UMKMHubOpportunity[]
 }
 
-model KnowledgeChunk {
-  chunk_id    String  @id @default(uuid())
-  document_id String
-  chunk_text  String  @db.Text
-  embedding   String? @db.Text // Stored as JSON vector or text representation
-  metadata    String? @db.Text
+model BusinessProfile {
+  id            String   @id @default(uuid())
+  user_id       String
+  user          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  document KnowledgeDocument @relation(fields: [document_id], references: [document_id], onDelete: Cascade)
+  // Section 1: Identitas UMKM
+  nama_usaha        String
+  nama_pemilik      String
+  kabupaten_kota    String
+  alamat_usaha      String   @db.Text
+  tahun_mulai_usaha Int      @default(2020)
+  deskripsi_usaha   String   @db.Text
+
+  // Section 2: Kategori dan Kemampuan Usaha
+  bidang_usaha String
+  kategori     String
+  target_pasar String
+  kapasitas    String
+  area_layanan String
+
+  // Section 3: Pengalaman dan Kesiapan Kemitraan
+  pengalaman_b2b                   String?      @db.Text
+  pengalaman_pesanan_besar         String?      @db.Text
+  legalitas_usaha                  String?      @db.Text
+  kesediaan_memenuhi_pesanan_besar YesNoSyarat  @default(Ya)
+  persyaratan_kemampuan_khusus     String?      @db.Text
+
+  // Section 4: Preferensi Kemitraan
+  jenis_peluang_diminati     String   @db.Text
+  wilayah_peluang_diinginkan String   @db.Text
+  minimal_pesanan            String
+  maksimal_pesanan            String
+  deskripsi_kerjasama        String   @db.Text
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt @default(now())
+
+  products        BusinessProduct[]
+  recommendations UMKMRecommendation[]
 }
 
-model RegionalContext {
-  context_id   String  @id @default(uuid())
-  year         Int     @default(2026)
-  province     String  @default("Jawa Barat")
-  city_regency String
-  district     String?
-  sector       String
-  indicator    String
-  value        Float
-  unit         String
-  source       String
-  source_url   String?
+model BusinessProduct {
+  id               String          @id @default(uuid())
+  profile_id       String
+  profile          BusinessProfile @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+
+  nama_produk      String
+  kategori         String
+  harga            Float           @default(0)
+  kapasitas        String
+  satuan_penjualan String          @default("pcs")
+  area_layanan     String
+
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt @default(now())
+}
+
+model UMKMHubOpportunity {
+  id                String   @id @default(uuid())
+  created_by        String?
+  creator           User?    @relation(fields: [created_by], references: [id], onDelete: SetNull)
+
+  judul_peluang     String
+  nama_instansi     String
+  lokasi            String
+  kategori          String
+  jumlah_dan_satuan String
+  periode           String
+  status            OpportunityStatus @default(Aktif)
+  link_sumber       String
+  deskripsi         String   @db.Text
+  persyaratan       String?  @db.Text
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt @default(now())
+
+  recommendations UMKMRecommendation[]
+}
+
+model UMKMRecommendation {
+  id             String              @id @default(uuid())
+  profile_id     String
+  profile        BusinessProfile     @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+  opportunity_id String
+  opportunity    UMKMHubOpportunity @relation(fields: [opportunity_id], references: [id], onDelete: Cascade)
+
+  ranking            Int    @default(1)
+  skor_relevansi     Float  @default(0.0)
+  alasan_rekomendasi String @db.Text // Stored as JSON string
+
+  created_at DateTime @default(now())
+
+  @@unique([profile_id, opportunity_id])
 }

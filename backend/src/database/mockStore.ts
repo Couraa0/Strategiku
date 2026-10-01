@@ -53,31 +53,6 @@ export interface MockTransaction {
   }[];
 }
 
-export interface MockOpportunity {
-  opportunity_id: string;
-  title: string;
-  organization_name: string;
-  opportunity_type: string;
-  category: string;
-  description: string;
-  location: string;
-  requirement: string;
-  capacity_required: string;
-  source: string;
-  source_url: string;
-  source_date: string;
-  status: string;
-}
-
-export interface MockRecommendation {
-  recommendation_id: string;
-  business_id: string;
-  opportunity_id: string;
-  score: number;
-  rank: number;
-  reason: string[];
-}
-
 export interface MockKnowledgeDocument {
   document_id: string;
   business_id: string;
@@ -96,6 +71,88 @@ export interface MockAssistantMessage {
   timestamp: string;
 }
 
+export interface MockProductItem {
+  id: string;
+  nama_produk: string;
+  kategori: string;
+  harga: number;
+  kapasitas: string;
+  satuan_penjualan: string;
+  area_layanan: string;
+}
+
+export interface MockBusinessProfile {
+  id: string;
+  user_id: string;
+  
+  // Section 1: Identitas UMKM
+  nama_usaha: string;
+  nama_pemilik: string;
+  kabupaten_kota: string;
+  alamat_usaha: string;
+  tahun_mulai_usaha: number;
+  deskripsi_usaha: string;
+
+  // Section 2: Kategori & Kemampuan Usaha
+  bidang_usaha: string;
+  kategori: string;
+  target_pasar: string;
+  kapasitas: string;
+  area_layanan: string;
+
+  // Section 3: Pengalaman & Kesiapan Kemitraan
+  pengalaman_b2b: string;
+  pengalaman_pesanan_besar: string;
+  legalitas_usaha: string;
+  kesediaan_memenuhi_pesanan_besar: 'Ya' | 'Tidak' | 'Dengan Syarat';
+  persyaratan_kemampuan_khusus: string;
+
+  // Section 4: Preferensi Kemitraan
+  jenis_peluang_diminati: string;
+  wilayah_peluang_diinginkan: string;
+  minimal_pesanan: string;
+  maksimal_pesanan: string;
+  deskripsi_kerjasama: string;
+
+  // Section 5: Katalog Produk / Jasa
+  products: MockProductItem[];
+
+  // Legacy compatibility fields
+  target_market?: string;
+  business_goal_context?: string;
+  sales_channels?: string[];
+  b2b_experience?: string;
+  capacity_description?: string;
+  digital_maturity?: string;
+}
+
+export interface MockOpportunity {
+  opportunity_id: string;
+  ranking?: number;
+  title: string;
+  organization_name: string;
+  location: string;
+  category: string;
+  match_score?: number;
+  match_reasons?: string[];
+  quantity_unit: string; // Jumlah dan satuan
+  periode: string;       // Periode
+  status: 'Aktif' | 'Terbuka' | 'Ditutup' | 'Proses Seleksi'; // Status
+  source_url: string;    // Link sumber
+  description: string;
+  requirement?: string;
+  created_at?: string;
+}
+
+export interface MockRecommendation {
+  recommendation_id: string;
+  business_id: string;
+  opportunity_id: string;
+  ranking: number;
+  skor_relevansi: number;
+  alasan_rekomendasi: string[];
+}
+
 const DEMO_PASSWORD_HASH = bcrypt.hashSync('Demo123!', 10);
 
 export const mockStore = {
@@ -105,17 +162,25 @@ export const mockStore = {
       name: 'Budi Santoso',
       email: 'demo@aphyah.id',
       password_hash: DEMO_PASSWORD_HASH,
-      role: 'OWNER',
+      role: 'UMKM_OWNER',
       created_at: new Date('2025-01-01').toISOString(),
     },
+    {
+      user_id: 'USR002',
+      name: 'Admin Strategiku',
+      email: 'admin@aphyah.id',
+      password_hash: DEMO_PASSWORD_HASH,
+      role: 'ADMIN',
+      created_at: new Date('2025-01-01').toISOString(),
+    }
   ] as MockUser[],
 
   businesses: [
     {
       business_id: 'UMKM001',
-      name: 'Kopi Karawang',
-      type: 'F&B / Pengolahan Kopi',
-      description: 'Produsen kopi lokal specialty dan olahan turunan kopi asli Karawang, Jawa Barat.',
+      name: 'Kopi Karawang Heritage',
+      type: 'Pengolahan Makanan & Minuman',
+      description: 'Produsen kopi specialty olahan lokal Karawang berkualitas tinggi.',
       province: 'Jawa Barat',
       city_regency: 'Kabupaten Karawang',
       district: 'Karawang Barat',
@@ -129,24 +194,92 @@ export const mockStore = {
   ] as MockBusiness[],
 
   business_profile: {
-    profile_id: 'PRF001',
-    business_id: 'UMKM001',
-    target_market: 'Retail Coffee Lovers, Cafe Local, Corporate Gifts',
-    business_goal_context: 'Meningkatkan penjualan B2B grosir dan memperluas distribusi cafe di wilayah Karawang dan Bandung.',
+    id: 'PRF001',
+    user_id: 'USR001',
+    // Section 1: Identitas UMKM
+    nama_usaha: 'Kopi Karawang Heritage',
+    nama_pemilik: 'Budi Santoso',
+    kabupaten_kota: 'Kabupaten Karawang',
+    alamat_usaha: 'Jl. Interchange Karawang Barat No. 45, Karawang',
+    tahun_mulai_usaha: 2021,
+    deskripsi_usaha: 'Produsen kopi specialty olahan lokal Karawang berkualitas tinggi dengan roasting konsisten.',
+
+    // Section 2: Kategori & Kemampuan Usaha
+    bidang_usaha: 'Pengolahan Makanan & Minuman',
+    kategori: 'Kopi & Minuman Olahan',
+    target_pasar: 'Cafe, Hotel, Retail Suvenir, dan Korporat',
+    kapasitas: '600 kg / bulan',
+    area_layanan: 'Jawa Barat & Jabodetabek',
+
+    // Section 3: Pengalaman & Kesiapan Kemitraan
+    pengalaman_b2b: 'Memasok 15 cafe lokal di Karawang & Bandung serta 3 dinas Pemkab.',
+    pengalaman_pesanan_besar: 'Memenuhi pesanan hampers 1.000 box Telkom Indonesia.',
+    legalitas_usaha: 'NIB, PIRT No. 210321501099-26, Halal MUI, Hak Merek (HKI)',
+    kesediaan_memenuhi_pesanan_besar: 'Ya',
+    persyaratan_kemampuan_khusus: 'Sertifikasi Roaster Teruji, Laboratorium Cupping Mandiri',
+
+    // Section 4: Preferensi Kemitraan
+    jenis_peluang_diminati: 'Pasokan B2B, Pengadaan Korporat, Reseller Grosir',
+    wilayah_peluang_diinginkan: 'Jawa Barat, DKI Jakarta, Banten',
+    minimal_pesanan: '50 Pouch / 10kg',
+    maksimal_pesanan: '2.000 Pouch / 500kg',
+    deskripsi_kerjasama: 'Kerjasama pasokan berkala jangka panjang 6-12 bulan dengan penetapan harga grosir khusus.',
+
+    // Section 5: Katalog Produk / Jasa
+    products: [
+      {
+        id: 'prod_001',
+        nama_produk: 'Kopi Arabika Specialty Karawang 250g',
+        kategori: 'Biji & Bubuk Kopi',
+        harga: 65000,
+        kapasitas: '300 kg / bulan',
+        satuan_penjualan: 'pouch',
+        area_layanan: 'Nasional',
+      },
+      {
+        id: 'prod_002',
+        nama_produk: 'Kopi Robusta Blend Karawang 250g',
+        kategori: 'Biji & Bubuk Kopi',
+        harga: 45000,
+        kapasitas: '500 kg / bulan',
+        satuan_penjualan: 'pouch',
+        area_layanan: 'Nasional',
+      },
+      {
+        id: 'prod_003',
+        nama_produk: 'Cold Brew Bottled Signature 250ml',
+        kategori: 'Minuman Siap Minum',
+        harga: 25000,
+        kapasitas: '400 botol / bulan',
+        satuan_penjualan: 'botol',
+        area_layanan: 'Jabodetabek & Karawang',
+      },
+      {
+        id: 'prod_004',
+        nama_produk: 'Drip Bag Coffee Box (Isi 5 Sachet)',
+        kategori: 'Kopi Praktis',
+        harga: 35000,
+        kapasitas: '250 box / bulan',
+        satuan_penjualan: 'box',
+        area_layanan: 'Nasional',
+      },
+    ],
+
+    // Legacy fields for backward compatibility
+    target_market: 'Cafe, Hotel, Retail Suvenir, dan Korporat',
+    business_goal_context: 'Meningkatkan penjualan B2B grosir dan memperluas distribusi cafe.',
     sales_channels: ['Offline Store', 'E-Commerce', 'Cafe Wholesale', 'Social Media'],
-    b2b_experience: 'Pernah memasok 3 cafe lokal dan bingkisan korporat instansi Pemkab.',
-    capacity_description: 'Kapasitas sangrai (roasting) hingga 600 kg per bulan, kemasan pouch alumunium foil valve.',
+    b2b_experience: 'Memasok 15 cafe lokal di Karawang & Bandung.',
+    capacity_description: '600 kg / bulan',
     digital_maturity: 'Medium',
-  },
+  } as MockBusinessProfile,
 
   business_goals: [
     { goal_id: 'G001', business_id: 'UMKM001', goal_type: 'Perluasan Pasar B2B', priority: 'HIGH', target_period: 'Q3-Q4 2026' },
-    { goal_id: 'G002', business_id: 'UMKM001', goal_type: 'Peningkatan Revenue 30%', priority: 'HIGH', target_period: '2026' },
   ],
 
   business_capabilities: [
     { capability_id: 'CAP001', business_id: 'UMKM001', capability_type: 'Kapasitas Roasting', description: 'Mesin roasting otomatis 10kg/batch', capacity_value: 600, unit: 'kg/bulan' },
-    { capability_id: 'CAP002', business_id: 'UMKM001', capability_type: 'Pengemasan Hygiene', description: 'Sealer otomatis & nitrogen flush', capacity_value: 2000, unit: 'pouch/bulan' },
   ],
 
   products: [
@@ -155,43 +288,10 @@ export const mockStore = {
       business_id: 'UMKM001',
       product_name: 'Kopi Arabika Specialty Karawang 250g',
       category: 'Biji & Bubuk Kopi',
-      description: 'Biji kopi Arabika kualitas premium dengan note asam buah-buahan dan hint cokelat.',
+      description: 'Biji kopi Arabika kualitas premium.',
       price: 65000,
       unit: 'pouch',
       capacity: 300,
-      is_active: true,
-    },
-    {
-      product_id: 'PROD002',
-      business_id: 'UMKM001',
-      product_name: 'Kopi Robusta Blend Karawang 250g',
-      category: 'Biji & Bubuk Kopi',
-      description: 'Kopi Robusta kaya rasa dengan body mantap dan aroma karamel yang kuat.',
-      price: 45000,
-      unit: 'pouch',
-      capacity: 500,
-      is_active: true,
-    },
-    {
-      product_id: 'PROD003',
-      business_id: 'UMKM001',
-      product_name: 'Cold Brew Bottled Signature 250ml',
-      category: 'Siap Minum',
-      description: 'Seduhan dingin 16 jam tanpa gula tambahan, segar dan rendah asam.',
-      price: 25000,
-      unit: 'botol',
-      capacity: 400,
-      is_active: true,
-    },
-    {
-      product_id: 'PROD004',
-      business_id: 'UMKM001',
-      product_name: 'Drip Bag Coffee Box (Isi 5 Sachet)',
-      category: 'Kopi Praktis',
-      description: 'Kopi kemasan drip praktis tinggal tuang air panas, pas untuk kantor & travel.',
-      price: 35000,
-      unit: 'box',
-      capacity: 250,
       is_active: true,
     },
   ] as MockProduct[],
@@ -207,185 +307,205 @@ export const mockStore = {
       total_amount: 1950000,
       items: [
         { product_name: 'Kopi Arabika Specialty Karawang 250g', quantity: 20, unit_price: 65000, subtotal: 1300000 },
-        { product_name: 'Kopi Robusta Blend Karawang 250g', quantity: 14, unit_price: 45000, subtotal: 630000 },
-      ],
-    },
-    {
-      transaction_id: 'TRX-2026-002',
-      business_id: 'UMKM001',
-      customer_name: 'Dewi Lestari',
-      customer_type: 'Retail',
-      transaction_date: '2026-02-15T14:15:00Z',
-      channel: 'Offline Store',
-      total_amount: 140000,
-      items: [
-        { product_name: 'Kopi Arabika Specialty Karawang 250g', quantity: 1, unit_price: 65000, subtotal: 65000 },
-        { product_name: 'Drip Bag Coffee Box (Isi 5 Sachet)', quantity: 1, unit_price: 35000, subtotal: 35000 },
-        { product_name: 'Cold Brew Bottled Signature 250ml', quantity: 1, unit_price: 25000, subtotal: 25000 },
-      ],
-    },
-    {
-      transaction_id: 'TRX-2026-003',
-      business_id: 'UMKM001',
-      customer_name: 'PT Mitra Sukses Mandiri',
-      customer_type: 'Corporate',
-      transaction_date: '2026-02-18T09:00:00Z',
-      channel: 'B2B Direct',
-      total_amount: 3500000,
-      items: [
-        { product_name: 'Drip Bag Coffee Box (Isi 5 Sachet)', quantity: 100, unit_price: 35000, subtotal: 3500000 },
-      ],
-    },
-    {
-      transaction_id: 'TRX-2026-004',
-      business_id: 'UMKM001',
-      customer_name: 'Reseller Bandung',
-      customer_type: 'Reseller',
-      transaction_date: '2026-02-22T16:45:00Z',
-      channel: 'E-Commerce',
-      total_amount: 2250000,
-      items: [
-        { product_name: 'Kopi Robusta Blend Karawang 250g', quantity: 50, unit_price: 45000, subtotal: 2250000 },
-      ],
-    },
-    {
-      transaction_id: 'TRX-2026-005',
-      business_id: 'UMKM001',
-      customer_name: 'Cafe Sejahtera',
-      customer_type: 'Cafe Wholesale',
-      transaction_date: '2026-03-01T11:20:00Z',
-      channel: 'B2B Direct',
-      total_amount: 3250000,
-      items: [
-        { product_name: 'Kopi Arabika Specialty Karawang 250g', quantity: 50, unit_price: 65000, subtotal: 3250000 },
-      ],
-    },
-    {
-      transaction_id: 'TRX-2026-006',
-      business_id: 'UMKM001',
-      customer_name: 'Ahmad Faisal',
-      customer_type: 'Retail',
-      transaction_date: '2026-03-05T13:10:00Z',
-      channel: 'Social Media',
-      total_amount: 195000,
-      items: [
-        { product_name: 'Kopi Arabika Specialty Karawang 250g', quantity: 3, unit_price: 65000, subtotal: 195000 },
       ],
     },
   ] as MockTransaction[],
 
   opportunities: [
     {
-      opportunity_id: 'OPP-2026-001',
-      title: 'Pengadaan Bingkisan Kopi & Suvenir UMKM Lokal Pemkab Karawang',
+      opportunity_id: 'opp_001',
+      ranking: 1,
+      title: 'Pengadaan Bingkisan Kopi & Suvenir UMKM Pemkab Karawang',
       organization_name: 'Dinas Koperasi & UMKM Kabupaten Karawang',
-      opportunity_type: 'Procurement / Bingkisan Korporat',
-      category: 'F&B / Kopi',
-      description: 'Pengadaan paket kemasan kopi suvenir khas Karawang untuk acara kunjungan kerja dan event daerah.',
       location: 'Kabupaten Karawang',
-      requirement: 'Produk kopi olahan lokal Karawang dengan sertifikasi Halal dan P-IRT. Kemasan eksklusif.',
-      capacity_required: '200 - 500 paket / pesanan',
-      source: 'Verified Opportunity',
+      category: 'F&B / Pengadaan',
+      match_score: 0.95,
+      match_reasons: [
+        'Kategori produk kopi specialty sesuai',
+        'Lokasi Kabupaten Karawang tepat sasaran',
+        'Legalitas NIB & Halal terverifikasi',
+        'Kapasitas produksi 600kg/bln mencukupi'
+      ],
+      quantity_unit: '500 Box Suvenir',
+      periode: '1 Oktober - 15 November 2026',
+      status: 'Aktif',
       source_url: 'https://diskopukm.karawangkab.go.id/peluang-pengadaan-2026',
-      source_date: '2026-02-10',
-      status: 'Active',
+      description: 'Pengadaan paket suvenir kopi lokal Karawang untuk perayaan HUT Karawang dan event kunjungan kerja dinas.',
+      requirement: 'Legalitas NIB & Halal terverifikasi, kemasan kotak eksklusif berlogo instansi.',
     },
     {
-      opportunity_id: 'OPP-2026-002',
-      title: 'Kemitraan Pasokan Biji Kopi untuk Jaringan Cafe Bandung',
+      opportunity_id: 'opp_002',
+      ranking: 2,
+      title: 'Pasokan Biji Kopi Roasting untuk Jaringan Cafe Bandung',
       organization_name: 'Kolektif Cafe Bandung Raya',
-      opportunity_type: 'Cafe Supply Agreement',
-      category: 'F&B / Kopi',
-      description: 'Kemitraan pasokan biji kopi Arabika & Robusta roasting konsisten per bulan untuk 5 cabang cafe lokal.',
       location: 'Kota Bandung',
-      requirement: 'Konsistensi kuantitas 150-300kg/bulan, profil sangrai Medium-to-Dark, sampel uji rasa (cupping).',
-      capacity_required: '250 kg / bulan',
-      source: 'Verified Opportunity',
+      category: 'F&B / Supply Agreement',
+      match_score: 0.89,
+      match_reasons: [
+        'Produk roasted bean siap pasokan B2B',
+        'Pengalaman pasokan cafe terbukti',
+        'Wilayah kemitraan Jawa Barat'
+      ],
+      quantity_unit: '250 kg / bulan',
+      periode: 'November 2026 - April 2027 (6 Bulan)',
+      status: 'Aktif',
       source_url: 'https://bandungcafenetwork.com/supply-partner-2026',
-      source_date: '2026-02-15',
-      status: 'Active',
+      description: 'Kemitraan pasokan biji kopi Arabika & Robusta roasted bean tingkat Medium-to-Dark untuk 8 outlet cafe.',
+      requirement: 'Sampel tes uji rasa (cupping score >80), konsistensi pasokan bulanan.',
     },
     {
-      opportunity_id: 'OPP-2026-003',
-      title: 'Program Display Produk UMKM Unggulan Rest Area Tol Cipularang',
-      organization_name: 'Pengelola Rest Area KM 88 Tol Purbaleunyi',
-      opportunity_type: 'Retail Partnership',
-      category: 'F&B / Retail suvenir',
-      description: 'Kesempatan menempatkan produk kopi siap minum dan drip bag pada etalase Pojok UMKM Rest Area.',
+      opportunity_id: 'opp_003',
+      ranking: 3,
+      title: 'Display Ritel Produk Suvenir Kopi Rest Area Tol Cipularang',
+      organization_name: 'Pengelola Rest Area KM 88 Purbaleunyi',
       location: 'Kabupaten Purwakarta',
-      requirement: 'Produk dalam kemasan ritel berdaya simpan >3 bulan, kemasan tahan banting.',
-      capacity_required: '100 pcs / minggu',
-      source: 'Public Business Opportunity Signal',
+      category: 'Retail / Etalase Suvenir',
+      match_score: 0.82,
+      match_reasons: [
+        'Katalog produk Drip Bag & Cold Brew sesuai standar ritel',
+        'Kemasan produk berizin P-IRT'
+      ],
+      quantity_unit: '150 Box / bulan',
+      periode: '1 Oktober 2026 - 31 Maret 2027',
+      status: 'Aktif',
       source_url: 'https://jasamarga.co.id/pojok-umkm-restarea',
-      source_date: '2026-01-28',
-      status: 'Active',
+      description: 'Fasilitas etalase ritel untuk produk olahan kopi praktis (Drip bag & Cold Brew) di pojok UMKM Jabar.',
+      requirement: 'Daya simpan produk >6 bulan, kemasan eye-catching dan tahan banting.',
     },
     {
-      opportunity_id: 'OPP-2026-004',
-      title: 'Distributor Produk Olahan Kopi Jawa Barat untuk Pasar Jabodetabek',
-      organization_name: 'PT Nusantara Food Distrindo',
-      opportunity_type: 'Distributor Agreement',
-      category: 'F&B / Distributor',
-      description: 'Mencari produsen UMKM kopi siap minum / drip bag untuk didistribusikan ke supermarket lokal Bekasi & Jakarta.',
+      opportunity_id: 'opp_004',
+      ranking: 4,
+      title: 'Program Kurasi Ekspor Fashion & Batik Tulis Jawa Barat',
+      organization_name: 'Dinas Perindustrian & Perdagangan Jabar',
+      location: 'Kota Cirebon',
+      category: 'Fesyen & Kriya',
+      match_score: 0.88,
+      match_reasons: [
+        'Pengalaman pembuatan busana etnik tradisional',
+        'Sertifikasi HKI Terdaftar'
+      ],
+      quantity_unit: '300 Pcs Kain Batik',
+      periode: 'Oktober 2026 - Februari 2027',
+      status: 'Terbuka',
+      source_url: 'https://disindag.jabarprov.go.id/kurasi-ekspor-batik',
+      description: 'Fasilitasi kurasi produk fashion batik dan kriya Nusantara untuk pasar ekspor ke Jepang & Singapura.',
+      requirement: 'Penggunaan pewarna ramah lingkungan (eco-dye), kapasitas minimal 100 kain/bulan.',
+    },
+    {
+      opportunity_id: 'opp_005',
+      ranking: 5,
+      title: 'Kemitraan Pasokan Snack & Keripik Pedas Minimarket Berjejaring',
+      organization_name: 'PT Retail Pasundan Modern',
       location: 'Kota Bekasi',
-      requirement: 'Minimal izin edar P-IRT & Halal, sanggup memenuhi pesanan bertahap dengan masa simpan produk jelas.',
-      capacity_required: '500 box / bulan',
-      source: 'Curated Prototype Opportunity',
-      source_url: 'https://nusantaradistrindo.co.id/partnership',
-      source_date: '2026-02-01',
-      status: 'Active',
+      category: 'F&B / Supply Agreement',
+      match_score: 0.86,
+      match_reasons: [
+        'Sertifikat Halal & P-IRT Lengkap',
+        'Daya simpan produk >12 bulan'
+      ],
+      quantity_unit: '2.000 Pouch / bulan',
+      periode: '1 November 2026 - 31 Oktober 2027',
+      status: 'Aktif',
+      source_url: 'https://pasundanretail.co.id/vendor-snack',
+      description: 'Penempatan produk camilan keripik pedas olahan lokal pada 120 jaringan minimarket di Jabodetabek.',
+      requirement: 'Kemasan foil zipper kedap udara, izin edar P-IRT dan Halal MUI terverifikasi.',
     },
     {
-      opportunity_id: 'OPP-2026-005',
-      title: 'Pasokan Kopi Drip Bag untuk Hampers Perusahaan BUMN',
-      organization_name: 'PT Telkom Indonesia (Witel Karawang)',
-      opportunity_type: 'Corporate Gift',
-      category: 'F&B / Kopi',
-      description: 'Pengadaan hampers suvenir akhir semester untuk pelanggan prioritas dan tamu instansi.',
-      location: 'Kabupaten Karawang',
-      requirement: 'Paket box eksklusif isi drip bag coffee + mug khas lokal.',
-      capacity_required: '150 box',
-      source: 'Verified Opportunity',
-      source_url: 'https://telkom.co.id/procurement-local',
-      source_date: '2026-03-01',
-      status: 'Active',
+      opportunity_id: 'opp_006',
+      ranking: 6,
+      title: 'Pasokan Teh Hijau & Herbal Organik Hotel Bintang 5 Bogor',
+      organization_name: 'Puncak Resort & Convention Hotel',
+      location: 'Kabupaten Bogor',
+      category: 'F&B / Pengadaan',
+      match_score: 0.84,
+      match_reasons: [
+        'Bahan baku organik terverifikasi',
+        'Kemasan pouch artisan premium'
+      ],
+      quantity_unit: '400 Pouch Artisan',
+      periode: 'Desember 2026 - Mei 2027',
+      status: 'Terbuka',
+      source_url: 'https://puncakresorthotel.com/vendor-tea',
+      description: 'Pengadaan teh hijau dan olahan herbal organik petik pucuk untuk welcome drink guest hotel.',
+      requirement: 'Sertifikasi Organik Indonesia (INOFICE) dan standar higienis F&B hotel.',
     },
+    {
+      opportunity_id: 'opp_007',
+      ranking: 7,
+      title: 'Etalase Produk Kriya & Anyaman Pandan Festival Sukabumi',
+      organization_name: 'Pemerintah Kota Sukabumi',
+      location: 'Kota Sukabumi',
+      category: 'Fesyen & Kriya',
+      match_score: 0.81,
+      match_reasons: [
+        'Kriya ramah lingkungan (zero-waste)',
+        'Kemitraan komunitas pengrajin'
+      ],
+      quantity_unit: '500 Pcs Craft',
+      periode: '15 November - 20 Desember 2026',
+      status: 'Proses Seleksi',
+      source_url: 'https://sukabumikab.go.id/event-kriya-2026',
+      description: 'Penyediaan booth etalase dan souvenir anyaman pandan alami untuk tamu mancanegara.',
+      requirement: 'Produk buatan tangan asli, finishing bebas bahan kimia beracun.',
+    },
+    {
+      opportunity_id: 'opp_008',
+      ranking: 8,
+      title: 'Pengadaan Goodie Bag & Souvenir Seminar Nasional ITB',
+      organization_name: 'Koperasi Sivitas Akademika ITB',
+      location: 'Kota Bandung',
+      category: 'Retail / Etalase Suvenir',
+      match_score: 0.85,
+      match_reasons: [
+        'Desain produk inovatif & ramah lingkungan',
+        'Lokasi Bandung sangat dekat'
+      ],
+      quantity_unit: '800 Pack Souvenir',
+      periode: '10 November - 25 November 2026',
+      status: 'Aktif',
+      source_url: 'https://koperasi.itb.ac.id/pengadaan-goodiebag',
+      description: 'Pengadaan souvenir unik olahan lokal (drip coffee, mug kriya, notebook ramah lingkungan).',
+      requirement: 'Selesai pengerjaan maksimal 14 hari sebelum hari pelaksanaan acara.',
+    },
+    {
+      opportunity_id: 'opp_009',
+      ranking: 9,
+      title: 'Supply Olahan Hasil Laut & Kerupuk Ikan Ekspor ASEAN',
+      organization_name: 'PT Bahari Pasundan Export',
+      location: 'Kabupaten Indramayu',
+      category: 'F&B / Supply Agreement',
+      match_score: 0.83,
+      match_reasons: [
+        'Uji laboratorium BPOM lolos',
+        'Kapasitas produksi besar'
+      ],
+      quantity_unit: '5 Ton / bulan',
+      periode: '1 Januari 2027 - 31 Desember 2027',
+      status: 'Terbuka',
+      source_url: 'https://baharipasundan.co.id/supplier-seafood',
+      description: 'Kemitraan pasokan bahan olahan laut dan kerupuk ikan kualitas ekspor tujuan Malaysia dan Thailand.',
+      requirement: 'Standar HACCP dan BPOM MD, kadar air <3%.',
+    },
+    {
+      opportunity_id: 'opp_010',
+      ranking: 10,
+      title: 'Program Pendampingan Sertifikasi Halal Gratis (SEHATI) Jabar',
+      organization_name: 'BPJPH & Satgas Halal Jawa Barat',
+      location: 'Kota Bandung',
+      category: 'Jasa & Teknologi',
+      match_score: 0.90,
+      match_reasons: [
+        'UMKM F&B belum bersertifikat Halal resmi',
+        'Memenuhi syarat Self-Declare'
+      ],
+      quantity_unit: '1.000 Kuota UMKM',
+      periode: 'Oktober 2026 - Desember 2026',
+      status: 'Aktif',
+      source_url: 'https://halal.jabarprov.go.id/sehati-2026',
+      description: 'Program pendampingan proses produk halal (PPH) gratis tanpa biaya untuk UMKM makanan minuman.',
+      requirement: 'Memiliki NIB berbasis risiko dan produk bebas bahan haram/syubhat.',
+    }
   ] as MockOpportunity[],
-
-  recommendations: [
-    {
-      recommendation_id: 'REC-001',
-      business_id: 'UMKM001',
-      opportunity_id: 'OPP-2026-001',
-      score: 0.94,
-      rank: 1,
-      reason: ['Keselarasan Kategori (F&B / Kopi)', 'Lokasi Sangat Sesuai (Karawang)', 'Kapasitas Produksi Mencukupi (Roasting 600kg/bln)', 'Sertifikasi Halal & P-IRT Sesuai'],
-    },
-    {
-      recommendation_id: 'REC-002',
-      business_id: 'UMKM001',
-      opportunity_id: 'OPP-2026-002',
-      score: 0.88,
-      rank: 2,
-      reason: ['Keselarasan Produk (Kopi Arabika & Robusta)', 'Wilayah Jawa Barat (Bandung)', 'Pengalaman B2B Cafe'],
-    },
-    {
-      recommendation_id: 'REC-003',
-      business_id: 'UMKM001',
-      opportunity_id: 'OPP-2026-005',
-      score: 0.85,
-      rank: 3,
-      reason: ['Keselarasan Lokasi (Karawang)', 'Produk Drip Bag Coffee Sesuai Target', 'Kapasitas Sangat Mencukupi'],
-    },
-    {
-      recommendation_id: 'REC-004',
-      business_id: 'UMKM001',
-      opportunity_id: 'OPP-2026-003',
-      score: 0.78,
-      rank: 4,
-      reason: ['Kategori Suvenir & Retail', 'Daya Simpan Kemasan Sesuai'],
-    },
-  ] as MockRecommendation[],
 
   knowledge_documents: [
     {
@@ -393,48 +513,17 @@ export const mockStore = {
       business_id: 'UMKM001',
       document_type: 'Catalog & Pricing',
       title: 'Katalog Produk & Daftar Harga Resmi Kopi Karawang',
-      content: `Daftar Produk Resmi Kopi Karawang (Update 2026):
-1. Kopi Arabika Specialty Karawang 250g - Harga Ritel: Rp 65.000 / pouch (Grosir >20 pouch: Rp 55.000). Biji kopi pilihan dari perkebunan Karawang Selatan dengan flavor note buah & asam segar.
-2. Kopi Robusta Blend Karawang 250g - Harga Ritel: Rp 45.000 / pouch (Grosir >20 pouch: Rp 38.000). Aroma karamel kuat dan body pekat.
-3. Cold Brew Bottled Signature 250ml - Harga Ritel: Rp 25.000 / botol. Minuman kopi seduh dingin tanpa pengawet.
-4. Drip Bag Coffee Box (Isi 5 Sachet) - Harga Ritel: Rp 35.000 / box (Grosir >50 box: Rp 28.000). Solusi seduh kopi praktis.`,
+      content: 'Daftar Produk Resmi Kopi Karawang Update 2026',
       source: 'Internal Document',
       version: '2.1',
       created_at: '2026-01-10T00:00:00Z',
-    },
-    {
-      document_id: 'KNOW-002',
-      business_id: 'UMKM001',
-      document_type: 'FAQ & Syarat Pemesanan',
-      title: 'FAQ Pemesanan Grosir & Kemitraan Cafe',
-      content: `Pertanyaan Umum (FAQ) & Kebijakan Bisnis Kopi Karawang:
-- Berapa minimal order untuk pembelian grosir B2B? Minimal order grosir adalah 10 pouch atau 20 box Drip Bag.
-- Apakah menyediakan custom branding/logo perusahaan untuk hampers? Ya, kami menerima pesanan hampers korporat dengan custom logo/stiker instansi dengan pesanan minimal 50 paket.
-- Berapa lama ketahanan produk? Biji/bubuk kopi dalam pouch valve bertahan hingga 12 bulan. Cold Brew botol bertahan 14 hari di kulkas pendingin. Drip bag coffee bertahan 9 bulan.
-- Apakah produk sudah bersertifikat resmi? Seluruh produk Kopi Karawang sudah memiliki izin P-IRT No. 210321501099-26 dan Sertifikasi Halal Indonesia.`,
-      source: 'Sales Policy',
-      version: '1.0',
-      created_at: '2026-01-15T00:00:00Z',
-    },
-    {
-      document_id: 'KNOW-003',
-      business_id: 'UMKM001',
-      document_type: 'Jam Operasional & Pengiriman',
-      title: 'Jam Operasional Toko & Kebijakan Pengiriman',
-      content: `Jam Operasional & Kontak Resmi:
-- Rumah Sangrai & Galeri Kopi Karawang buka Senin - Sabtu pukul 08.00 - 20.00 WIB (Hari Minggu Libur).
-- Alamat: Jl. Raya Karawang Barat No. 45, Kabupaten Karawang, Jawa Barat.
-- Layanan pengiriman grosir menggunakan Kurir Ekspedisi Cargo (Indah Cargo, JNE Trucking) untuk area Jawa Barat & Jabodetabek. Pengiriman lokal Karawang dapat menggunakan pengiriman sameday.`,
-      source: 'Operations Manual',
-      version: '1.0',
-      created_at: '2026-01-20T00:00:00Z',
     },
   ] as MockKnowledgeDocument[],
 
   assistant_history: [
     {
       role: 'assistant',
-      content: 'Halo! Saya AI Business Growth Assistant untuk Kopi Karawang. Ada yang bisa saya bantu terkait produk, penawaran harga grosir, atau persiapan pengajuan opportunity bisnis?',
+      content: 'Halo! Saya AI Business Growth Assistant untuk Kopi Karawang.',
       timestamp: new Date().toISOString(),
     },
   ] as MockAssistantMessage[],

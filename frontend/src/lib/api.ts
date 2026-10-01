@@ -23,7 +23,13 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('aph_yah_token');
-      if (window.location.pathname !== '/login' && window.location.pathname !== '/' && window.location.pathname !== '/register') {
+      const isPublicPath =
+        window.location.pathname === '/login' ||
+        window.location.pathname === '/' ||
+        window.location.pathname === '/register' ||
+        window.location.pathname.startsWith('/umkm-hub') ||
+        window.location.pathname.startsWith('/opportunities');
+      if (!isPublicPath) {
         window.location.href = '/login';
       }
     }

@@ -20,6 +20,7 @@ import { AIAssistantPage } from '../pages/assistant/AIAssistantPage';
 import { SettingsPage } from '../pages/settings/SettingsPage';
 import { UMKMHubPage } from '../pages/umkm-hub/UMKMHubPage';
 import { UMKMHubDetailPage } from '../pages/umkm-hub/UMKMHubDetailPage';
+import { UMKMHubInputPage } from '../pages/umkm-hub/UMKMHubInputPage';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -47,7 +48,9 @@ export const AppRoutes: React.FC = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/umkm-hub" element={<UMKMHubPage />} />
+      <Route path="/umkm-hub-input" element={<UMKMHubInputPage />} />
       <Route path="/umkm-hub/:id" element={<UMKMHubDetailPage />} />
+      <Route path="/opportunities/:id" element={<OpportunityDetailPage />} />
 
       {/* Protected Routes */}
       <Route
@@ -103,14 +106,6 @@ export const AppRoutes: React.FC = () => {
         element={
           <ProtectedRoute>
             <OpportunityCenterPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/opportunities/:id"
-        element={
-          <ProtectedRoute>
-            <OpportunityDetailPage />
           </ProtectedRoute>
         }
       />

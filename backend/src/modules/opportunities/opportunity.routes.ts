@@ -4,9 +4,8 @@ import { authenticateJwt } from '../../middleware/authMiddleware.js';
 
 const router = Router();
 
-router.use(authenticateJwt);
-
 router.get('/', OpportunityController.getOpportunities);
 router.get('/:id', OpportunityController.getById);
+router.post('/', authenticateJwt, OpportunityController.createOpportunity);
 
 export default router;

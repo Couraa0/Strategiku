@@ -6,8 +6,8 @@ import { AuthRequest } from '../../middleware/authMiddleware.js';
 export class OpportunityController {
   static getOpportunities(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const { category, location, type, status } = req.query as Record<string, string>;
-      const list = OpportunityService.getOpportunities({ category, location, type, status });
+      const { category, location, status } = req.query as Record<string, string>;
+      const list = OpportunityService.getOpportunities({ category, location, status });
       return sendSuccess(res, list, 'Daftar peluang usaha berhasil diambil');
     } catch (err) {
       next(err);
@@ -19,6 +19,15 @@ export class OpportunityController {
       const { id } = req.params;
       const opp = OpportunityService.getOpportunityById(id);
       return sendSuccess(res, opp, 'Detail peluang usaha berhasil diambil');
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static createOpportunity(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const newOpp = OpportunityService.createOpportunity(req.body);
+      return sendSuccess(res, newOpp, 'Peluang UMKM Hub berhasil ditambahkan', 201);
     } catch (err) {
       next(err);
     }
