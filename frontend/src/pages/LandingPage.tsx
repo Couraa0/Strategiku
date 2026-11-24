@@ -1556,11 +1556,11 @@ export const LandingPage: React.FC = () => {
               <ul className="space-y-2.5 text-xs font-normal text-slate-500">
                 <li className="flex items-start gap-2">
                   <MapPin className="w-4 h-4 text-[#007AFF] shrink-0 mt-0.5" />
-                  <span className="leading-relaxed">Gedung Sate, Lt. 1<br />Jl. Diponegoro No.22, Bandung</span>
+                  <span className="leading-relaxed">Jl. HS.Ronggo Waluyo, Puseurjaya, Telukjambe Timur, Karawang, Jawa Barat 41361</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Phone className="w-4 h-4 text-[#007AFF] shrink-0" />
-                  <span>+62 811-2233-4455</span>
+                  <a href="tel:087871310560" className="hover:text-[#007AFF] transition-colors">087871310560</a>
                 </li>
               </ul>
             </div>
