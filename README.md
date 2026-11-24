@@ -1,10 +1,5 @@
-<<<<<<< HEAD
 # Strategiku - Integrated UMKM Business Growth Intelligence Platform
-Acong
-=======
-# APH YAH - Integrated UMKM Business Growth Intelligence Platform
 
->>>>>>> b8738f09386f5c2b421325a53929f33e5c890fcc
 > **Tagline**: *"From Business Data to Business Growth"*  
 > **Tagline (ID)**: *"Dari Data Usaha Menjadi Arah Pertumbuhan"*  
 > **Regional Scope**: Jawa Barat, Indonesia  
