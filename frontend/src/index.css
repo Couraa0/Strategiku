@@ -14,18 +14,34 @@
   }
 
   body {
-    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
-    @apply bg-slate-50 text-slate-900 antialiased selection:bg-sky-500 selection:text-white min-h-screen;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    @apply bg-[#FAFCFF] text-slate-900 antialiased selection:bg-blue-600 selection:text-white min-h-screen;
     background-color: #fafcff;
     background-image: 
-      radial-gradient(at 10% 10%, rgba(56, 189, 248, 0.12) 0px, transparent 50%),
-      radial-gradient(at 90% 15%, rgba(99, 102, 241, 0.10) 0px, transparent 50%),
-      radial-gradient(at 50% 85%, rgba(14, 165, 233, 0.08) 0px, transparent 60%);
+      radial-gradient(at 15% 10%, rgba(56, 189, 248, 0.14) 0px, transparent 45%),
+      radial-gradient(at 85% 15%, rgba(99, 102, 241, 0.10) 0px, transparent 45%),
+      radial-gradient(at 50% 80%, rgba(14, 165, 233, 0.08) 0px, transparent 55%);
     background-attachment: fixed;
   }
 }
 
-/* Gen-Z Typography & Gradients */
+.font-display {
+  font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+/* Background Patterns */
+.bg-dot-pattern {
+  background-image: radial-gradient(rgba(14, 165, 233, 0.16) 1.2px, transparent 1.2px);
+  background-size: 24px 24px;
+}
+
+.bg-grid-subtle {
+  background-image: linear-gradient(to right, rgba(226, 232, 240, 0.45) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(226, 232, 240, 0.45) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Modern Gradient Text Utilities */
 .gradient-text-sky {
   background: linear-gradient(135deg, #0284c7 0%, #38bdf8 50%, #6366f1 100%);
   -webkit-background-clip: text;
@@ -34,7 +50,7 @@
 }
 
 .gradient-text-hero {
-  background: linear-gradient(135deg, #0f172a 0%, #0284c7 35%, #38bdf8 70%, #4f46e5 100%);
+  background: linear-gradient(135deg, #0f172a 0%, #0284c7 40%, #2563eb 70%, #4f46e5 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -42,7 +58,7 @@
   animation: gradientShift 6s ease infinite;
 }
 
-/* Glassmorphism Panel Utilities */
+/* Glass & Card Utilities */
 .glass-panel {
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(16px);
@@ -51,33 +67,27 @@
   box-shadow: 0 4px 20px -2px rgba(14, 165, 233, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
 }
 
-.glass-panel-hover {
+.card-modern {
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 25px -4px rgba(15, 23, 42, 0.04), 0 2px 6px -2px rgba(15, 23, 42, 0.02);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.glass-panel-hover:hover {
-  background: #ffffff;
+
+.card-modern:hover {
   border-color: rgba(56, 189, 248, 0.6);
   transform: translateY(-4px);
-  box-shadow: 0 16px 35px -8px rgba(14, 165, 233, 0.18), 0 0 20px rgba(56, 189, 248, 0.12);
+  box-shadow: 0 20px 40px -10px rgba(14, 165, 233, 0.12), 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
-/* Card Surface Design */
-.card-genz {
-  background: #ffffff;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 1.25rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.card-genz:hover {
-  border-color: #38bdf8;
-  transform: translateY(-4px);
-  box-shadow: 0 16px 32px -8px rgba(14, 165, 233, 0.16);
+/* Pill Glows */
+.glow-pill-blue {
+  box-shadow: 0 0 24px -2px rgba(0, 122, 255, 0.35);
 }
 
-/* Sky Glow Highlights */
-.sky-glow {
-  box-shadow: 0 0 25px -5px rgba(56, 189, 248, 0.35);
+.glow-pill-cyan {
+  box-shadow: 0 0 24px -2px rgba(56, 189, 248, 0.4);
 }
 
 /* Keyframe Animations */

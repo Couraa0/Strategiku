@@ -15,21 +15,35 @@ import {
   ChevronLeft,
   ChevronRight,
   Globe,
+  X,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 interface SidebarProps {
   collapsed?: boolean;
   onToggle?: () => void;
+  mobileOpen?: boolean;
+  onCloseMobile?: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ collapsed = false, onToggle }) => {
+export const Sidebar: React.FC<SidebarProps> = ({
+  collapsed = false,
+  onToggle,
+  mobileOpen = false,
+  onCloseMobile,
+}) => {
   const { user, business, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handleLinkClick = () => {
+    if (onCloseMobile) {
+      onCloseMobile();
+    }
   };
 
   const renderNavLink = (
@@ -41,6 +55,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed = false, onToggle })
   ) => (
     <NavLink
       to={to}
+      onClick={handleLinkClick}
       title={collapsed ? label : undefined}
       className={({ isActive }) =>
         `group flex items-center ${
@@ -72,39 +87,61 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed = false, onToggle })
 
   return (
     <aside
-      className={`${
-        collapsed ? 'w-20' : 'w-64'
-      } bg-white/95 border-r border-slate-200/90 flex flex-col justify-between h-screen fixed left-0 top-0 z-40 backdrop-blur-xl shadow-sm transition-all duration-300`}
+      className={`
+        fixed left-0 top-0 h-screen z-50
+        bg-white/95 border-r border-slate-200/90 flex flex-col justify-between
+        backdrop-blur-xl shadow-lg md:shadow-xs transition-all duration-300
+        ${collapsed ? 'md:w-20' : 'md:w-64'}
+        w-64
+        ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+      `}
     >
       {/* Brand Header */}
       <div>
         <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-          <NavLink to="/dashboard" className="flex items-center gap-3 group overflow-hidden">
+          <NavLink to="/dashboard" onClick={handleLinkClick} className="flex items-center gap-3 group overflow-hidden">
             {collapsed ? (
               <div className="w-8 h-8 rounded-xl bg-sky-500 text-white flex items-center justify-center font-black text-sm shadow-md">
                 S
               </div>
             ) : (
-              <img src="/logo/Logo+Text+Landscape.png" alt="Strategiku Logo" className="h-9 w-auto" />
+              <img src="/logo/Logo+Text+Landscape.png" alt="Strategiku Logo" className="h-8 sm:h-9 w-auto" />
             )}
           </NavLink>
 
-          {onToggle && (
-            <button
-              onClick={onToggle}
-              title={collapsed ? 'Perluas Sidebar' : 'Minimize Sidebar'}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-sky-600 hover:bg-sky-50 transition-colors"
-            >
-              {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-            </button>
-          )}
+          <div className="flex items-center gap-1">
+            {/* Desktop Collapse Toggle */}
+            {onToggle && (
+              <button
+                onClick={onToggle}
+                title={collapsed ? 'Perluas Sidebar' : 'Minimize Sidebar'}
+                className="hidden md:flex p-1.5 rounded-lg text-slate-400 hover:text-sky-600 hover:bg-sky-50 transition-colors"
+              >
+                {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+              </button>
+            )}
+
+            {/* Mobile Close Button */}
+            {onCloseMobile && (
+              <button
+                onClick={onCloseMobile}
+                title="Tutup Menu"
+                className="flex md:hidden p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Navigation Items */}
-        <div className="p-3 space-y-5 overflow-y-auto max-h-[calc(100vh-160px)]">
+        <div className="p-3 space-y-4 overflow-y-auto max-h-[calc(100vh-150px)]">
           {/* LANDING PAGE LINK */}
           <button
-            onClick={() => navigate('/')}
+            onClick={() => {
+              handleLinkClick();
+              navigate('/');
+            }}
             title={collapsed ? 'Kembali ke Beranda' : undefined}
             className={`w-full flex items-center ${
               collapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3.5 py-2.5'
