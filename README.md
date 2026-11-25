@@ -62,8 +62,8 @@ Project ini menggunakan Supabase PostgreSQL:
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/Couraa0/Skripsi.git
-cd Skripsi
+git clone https://github.com/Couraa0/Strategiku.git
+cd Strategiku
 ```
 
 ### 2. Backend Setup & Run
